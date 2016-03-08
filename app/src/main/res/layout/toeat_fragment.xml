@@ -4,17 +4,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- test title -->
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        />
+        android:gravity="center"/>
 
+    <!-- List -->
     <ListView android:id="@id/android:list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#00FF00"
+        android:background="@color/colorBackground"
         android:layout_weight="1"
         android:drawSelectorOnTop="false"/>
 

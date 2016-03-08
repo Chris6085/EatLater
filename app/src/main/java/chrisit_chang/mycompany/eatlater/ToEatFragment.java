@@ -2,24 +2,21 @@ package chrisit_chang.mycompany.eatlater;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.List;
 
 public class ToEatFragment extends ListFragment {
     // Store instance variables
     private String title;
     private int page;
 
+    //資料庫物件
     private RestaurantDAO restaurantDAO;
-
-    String[] WEEK_DATA = {"Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"};
-    String[] title_restaurant = {"Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"};
 
     // newInstance constructor for creating fragment with arguments
     public static ToEatFragment newInstance(int page, String title) {
@@ -27,7 +24,7 @@ public class ToEatFragment extends ListFragment {
         Bundle args = new Bundle();
         args.putInt("someInt", page);
         args.putString("someTitle", title);
-        Log.d("newInstance", "page=" + page);
+//        Log.d("newInstance", "page=" + page);
         fragmentFirst.setArguments(args);
         return fragmentFirst;
     }
@@ -46,13 +43,9 @@ public class ToEatFragment extends ListFragment {
             restaurantDAO.sample();
         }
 
-        List<Restaurant> restaurantList = restaurantDAO.getAll();
-        for (int i=0; i<restaurantList.size() ; i++) {
+        //setListAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, WEEK_DATA));
 
-        }
-
-
-        setListAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, WEEK_DATA));
+        setListAdapter(new RestaurantAdapter(getActivity(), R.layout.single_restaurant, restaurantDAO.getAll()));
     }
 
     // Inflate the view for the fragment based on layout XML
@@ -63,5 +56,24 @@ public class ToEatFragment extends ListFragment {
         TextView tvLabel = (TextView) view.findViewById(R.id.textView);
         tvLabel.setText(page + " -- " + title);
         return view;
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        Toast toast = Toast. makeText(getContext() , "position=" + position, Toast.LENGTH_SHORT);
+        toast.show();
+
+
+//        Intent intent = new Intent(getContext(), AddingActivity.class);
+//        EditText editText = (EditText) findViewById(R.id.edit_message);
+//
+//
+//
+//
+//        String message = editText.getText().toString();
+//        intent.putExtra(EXTRA_MESSAGE, message);
+//        startActivity(intent);
     }
 }

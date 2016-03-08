@@ -144,10 +144,6 @@ public class RestaurantDAO {
         result.setTel(cursor.getString(3));
         result.setAssociateDiary(cursor.getString(4));
 
-//        Log.d(TAG, "id=" + result.getId());
-//        Log.d(TAG, "title=" + result.getTitle());
-//        Log.d(TAG, "tel=" + result.getTel());
-
         // 回傳結果
         return result;
     }

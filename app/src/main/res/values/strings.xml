@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">EatLater</string>
     <string name="action_settings">Settings</string>
+
+    <string name="addTitle">Title</string>
+    <string name="addNotes">Notes</string>
+    <string name="addTel">TelNumber</string>
+    <string name="addURL">Add URL of Blog</string>
+
+    <string name="OK">Send</string>
 </resources>
