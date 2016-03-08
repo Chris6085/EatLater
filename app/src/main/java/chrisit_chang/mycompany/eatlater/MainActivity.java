@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     TabLayout mTabs;
     FragmentPagerAdapter adapterViewPager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,17 +27,15 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //建立TabLayout
         mTabs = (android.support.design.widget.TabLayout) findViewById(R.id.tabs);
         mTabs.addTab(mTabs.newTab().setText("Tab 1"));
         mTabs.addTab(mTabs.newTab().setText("Tab 2"));
-
-
 
         ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
         vpPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabs));
-
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
