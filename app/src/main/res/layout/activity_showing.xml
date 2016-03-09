@@ -1,51 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="chrisit_chang.mycompany.eatlater.ShowingActivity">
 
     <EditText
-        android:id="@+id/addingTitle"
+        android:id="@+id/showingTitle"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="@string/addTitle"/>
 
     <EditText
-        android:id="@+id/addingNotes"
+        android:id="@+id/showingNotes"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="@string/addNotes"
-        android:layout_below="@+id/addingTitle"
+        android:layout_below="@id/showingTitle"
         android:layout_alignParentStart="true"/>
 
     <EditText
-        android:id="@+id/addingTel"
+        android:id="@+id/showingTel"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_below="@+id/addingNotes"
+        android:layout_below="@id/showingNotes"
         android:hint="@string/addTel"/>
 
     <EditText
-        android:id="@+id/addingAssociateDiary"
+        android:id="@+id/showingAssociateDiary"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_below="@+id/addingTel"
+        android:layout_below="@id/showingTel"
         android:hint="@string/addURL"/>
 
     <Button
-        android:id="@+id/ok"
+        android:id="@+id/update_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/OK"
-        android:layout_below="@+id/addingAssociateDiary"
-        android:layout_toStartOf="@+id/back" />
+        android:text="@string/update"
+        android:layout_below="@+id/showingAssociateDiary"
+        android:layout_toStartOf="@+id/update_back_button" />
 
     <Button
-        android:id="@+id/back"
+        android:id="@+id/update_back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/back"
-        android:layout_below="@+id/addingAssociateDiary"
+        android:layout_below="@id/showingAssociateDiary"
         android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

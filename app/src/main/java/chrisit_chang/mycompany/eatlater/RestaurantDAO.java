@@ -41,7 +41,6 @@ public class RestaurantDAO {
 
     // 關閉資料庫，一般的應用都不需要修改
     public void close() {
-
         db.close();
     }
 
@@ -80,6 +79,7 @@ public class RestaurantDAO {
         cv.put(COLUMN_NOTE, restaurant.getNotes());
         cv.put(COLUMN_TEL, restaurant.getTel());
         cv.put(COLUMN_NAME_ASSOCIATE_DIARY, restaurant.getAssociateDiary());
+
 
         // 設定修改資料的條件為編號
         // 格式為「欄位名稱＝資料」
@@ -143,6 +143,10 @@ public class RestaurantDAO {
         result.setNotes(cursor.getString(2));
         result.setTel(cursor.getString(3));
         result.setAssociateDiary(cursor.getString(4));
+
+        Log.d(TAG, "id=" + result.getId());
+        Log.d(TAG, "notes=" + result.getNotes());
+        Log.d(TAG, "tel=" + result.getTel());
 
         // 回傳結果
         return result;

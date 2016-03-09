@@ -43,10 +43,10 @@ public class RestaurantAdapter extends ArrayAdapter<Restaurant> {
             restaurantView = (LinearLayout) convertView;
         }
 
-        // 讀取標題
+        // read title
         TextView titleView = (TextView) restaurantView.findViewById(R.id.title_text);
 
-        // 設定標題
+        // set title
         titleView.setText(restaurant.getTitle());
 
         return restaurantView;

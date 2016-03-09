@@ -1,5 +1,6 @@
 package chrisit_chang.mycompany.eatlater;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -11,22 +12,24 @@ import android.widget.Toast;
 
 
 public class ToEatFragment extends ListFragment {
+
+    public final static String SHOWING_UPDATING_ID = "chrisit_chang.myCompany.eatLater.RestaurantId";
+
     // Store instance variables
     private String title;
     private int page;
 
-    //資料庫物件
-    private RestaurantDAO restaurantDAO;
+
 
     // newInstance constructor for creating fragment with arguments
     public static ToEatFragment newInstance(int page, String title) {
-        ToEatFragment fragmentFirst = new ToEatFragment();
+        ToEatFragment toEatFragment = new ToEatFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", page);
         args.putString("someTitle", title);
 //        Log.d("newInstance", "page=" + page);
-        fragmentFirst.setArguments(args);
-        return fragmentFirst;
+        toEatFragment.setArguments(args);
+        return toEatFragment;
     }
 
     // Store instance variables based on arguments passed
@@ -37,7 +40,7 @@ public class ToEatFragment extends ListFragment {
         title = getArguments().getString("someTitle");
 
         //建立資料庫物件
-        restaurantDAO = new RestaurantDAO(getContext());
+        RestaurantDAO restaurantDAO = new RestaurantDAO(getContext());
 
         if (restaurantDAO.getCount() == 0) {
             restaurantDAO.sample();
@@ -62,18 +65,17 @@ public class ToEatFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        Toast toast = Toast. makeText(getContext() , "position=" + position, Toast.LENGTH_SHORT);
+        //get item (Restaurant)
+        Restaurant restaurant = (Restaurant) this.getListAdapter().getItem(position);
+
+        //start intent
+        Intent intent = new Intent(getActivity(),ShowingActivity.class);
+        long restaurantId = restaurant.getId();
+        intent.putExtra(SHOWING_UPDATING_ID, restaurantId);
+        startActivity(intent);
+
+        Toast toast = Toast. makeText(getContext() , "URL=" + restaurant.getAssociateDiary(), Toast.LENGTH_SHORT);
         toast.show();
 
-
-//        Intent intent = new Intent(getContext(), AddingActivity.class);
-//        EditText editText = (EditText) findViewById(R.id.edit_message);
-//
-//
-//
-//
-//        String message = editText.getText().toString();
-//        intent.putExtra(EXTRA_MESSAGE, message);
-//        startActivity(intent);
     }
 }

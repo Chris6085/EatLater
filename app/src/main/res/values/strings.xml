@@ -6,6 +6,9 @@
     <string name="addNotes">Notes</string>
     <string name="addTel">TelNumber</string>
     <string name="addURL">Add URL of Blog</string>
+    <string name="OK">Commit</string>
+    <string name="back">Back</string>
 
-    <string name="OK">Send</string>
+    <string name="update">Update</string>
+
 </resources>
