@@ -1,9 +1,7 @@
 package chrisit_chang.mycompany.eatlater;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,35 +22,14 @@ public class AddingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //establish a new restaurant object
-                Restaurant restaurant = new Restaurant();
-
-
-                //set attributes of the new restaurant
-                EditText editText = (EditText) findViewById(R.id.addingTitle);
-                restaurant.setTitle(editText.getText().toString());
-
-                EditText editText2 = (EditText) findViewById(R.id.addingNotes);
-                restaurant.setNotes(editText2.getText().toString());
-
-                EditText editText3 = (EditText) findViewById(R.id.addingTel);
-                restaurant.setTel(editText3.getText().toString());
-
-                EditText editText4 = (EditText) findViewById(R.id.addingAssociateDiary);
-                restaurant.setAssociateDiary(editText4.getText().toString());
-
                 //insert restaurant to db
                 RestaurantDAO restaurantDAO = new RestaurantDAO(AddingActivity.this);
-                restaurantDAO.insert(restaurant);
-
-                //return to MainActivity
+                restaurantDAO.insert(findViewAndGetRestaurant());
                 finish();
-
-
             }
         });
 
-        //back button
+        //set back_button
         Button backButton = (Button) findViewById(R.id.back);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,10 +37,30 @@ public class AddingActivity extends AppCompatActivity {
 
                 Toast toast = Toast. makeText(AddingActivity.this , "Add no restaurant", Toast.LENGTH_SHORT);
                 toast.show();
-
-                //return to MainActivity
                 finish();
             }
         });
+    }
+
+    public Restaurant findViewAndGetRestaurant() {
+
+        //establish a new restaurant object
+        Restaurant restaurant = new Restaurant();
+
+        //set attributes of the new restaurant
+        EditText editText = (EditText) findViewById(R.id.addingTitle);
+        restaurant.setTitle(editText.getText().toString());
+
+        EditText editText2 = (EditText) findViewById(R.id.addingNotes);
+        restaurant.setNotes(editText2.getText().toString());
+
+        EditText editText3 = (EditText) findViewById(R.id.addingTel);
+        restaurant.setTel(editText3.getText().toString());
+
+        EditText editText4 = (EditText) findViewById(R.id.addingAssociateDiary);
+        restaurant.setAssociateDiary(editText4.getText().toString());
+
+        return restaurant;
+
     }
 }

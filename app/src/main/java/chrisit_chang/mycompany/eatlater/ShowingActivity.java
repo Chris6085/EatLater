@@ -13,6 +13,11 @@ public class ShowingActivity extends AppCompatActivity {
 
     private static final String TAG = "ShowingActivity";
 
+    private EditText mEditText;
+    private EditText mEditText2;
+    private EditText mEditText3;
+    private EditText mEditText4;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,60 +27,37 @@ public class ShowingActivity extends AppCompatActivity {
         //get message from intent to retrieve the restaurant of designed id
         Intent intent = getIntent();
         long restaurantId = intent.getLongExtra(ToEatFragment.SHOWING_UPDATING_ID, 0);
+
         final RestaurantDAO restaurantDAO = getRestaurantDAO();
         final Restaurant restaurant = restaurantDAO.get(restaurantId);
 
+        //set all EditView with the designed restaurant
+        setAllView(restaurant);
 
-        //input data of restaurant to editText
-        //TODO 預設值顯示
-        final EditText editText = (EditText) findViewById(R.id.showingTitle);
-        editText.setText(restaurant.getTitle());
-
-        final EditText editText2 = (EditText) findViewById(R.id.showingNotes);
-        editText2.setText(restaurant.getNotes());
-
-        final EditText editText3 = (EditText) findViewById(R.id.showingTel);
-        editText3.setText(restaurant.getTel());
-
-        final EditText editText4 = (EditText) findViewById(R.id.showingAssociateDiary);
-        editText4.setText(restaurant.getAssociateDiary());
-
-
-        //update button
+        //set update_button
         Button button = (Button) findViewById(R.id.update_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 //set attributes of the new restaurant
-                restaurant.setTitle(editText.getText().toString());
-                restaurant.setNotes(editText2.getText().toString());
-//                Log.d(TAG, "editText2=" + editText2.getText().toString());
-                restaurant.setTel(editText3.getText().toString());
-                restaurant.setAssociateDiary(editText4.getText().toString());
+                restaurant.setTitle(mEditText.getText().toString());
+                restaurant.setNotes(mEditText2.getText().toString());
+                restaurant.setTel(mEditText3.getText().toString());
+                restaurant.setAssociateDiary(mEditText4.getText().toString());
 
-//                Log.d(TAG, "getNotes before DAO=" + restaurant.getNotes());
                 //update attributes of restaurant
                 restaurantDAO.update(restaurant);
-
-//                Log.d(TAG, "getNotes after DAO=" + restaurant.getNotes());
-
-                //return to MainActivity
                 finish();
             }
         });
 
-        //back button
+        //set back_button
         Button backButton = (Button) findViewById(R.id.update_back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Toast toast = Toast.makeText(ShowingActivity.this, "Update no restaurant", Toast.LENGTH_SHORT);
-                toast.show();
-
-
-                //return to MainActivity
                 finish();
             }
         });
@@ -83,5 +65,23 @@ public class ShowingActivity extends AppCompatActivity {
 
     public RestaurantDAO getRestaurantDAO() {
         return new RestaurantDAO(ShowingActivity.this);
+    }
+
+    public void setAllView(Restaurant restaurant) {
+
+        //input data of restaurant to editText
+        //TODO 預設值顯示
+        mEditText = (EditText) findViewById(R.id.showingTitle);
+        mEditText.setText(restaurant.getTitle());
+
+        mEditText2 = (EditText) findViewById(R.id.showingNotes);
+        mEditText2.setText(restaurant.getNotes());
+
+        mEditText3= (EditText) findViewById(R.id.showingTel);
+        mEditText3.setText(restaurant.getTel());
+
+        mEditText4= (EditText) findViewById(R.id.showingAssociateDiary);
+        mEditText4.setText(restaurant.getAssociateDiary());
+
     }
 }

@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class ToEatFragment extends ListFragment {
@@ -27,7 +26,6 @@ public class ToEatFragment extends ListFragment {
         Bundle args = new Bundle();
         args.putInt("someInt", page);
         args.putString("someTitle", title);
-//        Log.d("newInstance", "page=" + page);
         toEatFragment.setArguments(args);
         return toEatFragment;
     }
@@ -45,8 +43,6 @@ public class ToEatFragment extends ListFragment {
         if (restaurantDAO.getCount() == 0) {
             restaurantDAO.sample();
         }
-
-        //setListAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, WEEK_DATA));
 
         setListAdapter(new RestaurantAdapter(getActivity(), R.layout.single_restaurant, restaurantDAO.getAll()));
     }
@@ -73,9 +69,6 @@ public class ToEatFragment extends ListFragment {
         long restaurantId = restaurant.getId();
         intent.putExtra(SHOWING_UPDATING_ID, restaurantId);
         startActivity(intent);
-
-        Toast toast = Toast. makeText(getContext() , "URL=" + restaurant.getAssociateDiary(), Toast.LENGTH_SHORT);
-        toast.show();
 
     }
 }
