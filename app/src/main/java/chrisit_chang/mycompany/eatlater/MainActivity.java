@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,17 @@ import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    public static final int REQUEST_ID_SHOWING_ACTIVITY = 0;
+    public static final int REQUEST_ID_ADDING_ACTIVITY = 1;
+
+    public static final String ADD_ACTIVITY = "add";
+    public static final String Update_ACTIVITY = "update";
+    public static final int REQUEST_ADD = 0;
+    public static final int REQUEST_SHOW = 1;
+
+
+    private static final String TAG = "MainActivity";
     TabLayout mTabs;
     FragmentPagerAdapter adapterViewPager;
 
@@ -46,9 +58,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, AddingActivity.class);
-                startActivity(intent);
+//                intent.putExtra(ADD_ACTIVITY, REQUEST_ADD);
+                startActivityForResult(intent, MainActivity.REQUEST_ID_ADDING_ACTIVITY);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult in MainActivity");
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "bye");
     }
 
     @Override
@@ -108,6 +128,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
 
 }

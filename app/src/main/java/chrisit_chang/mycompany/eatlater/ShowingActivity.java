@@ -1,8 +1,8 @@
 package chrisit_chang.mycompany.eatlater;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,7 +28,9 @@ public class ShowingActivity extends AppCompatActivity {
         Intent intent = getIntent();
         long restaurantId = intent.getLongExtra(ToEatFragment.SHOWING_UPDATING_ID, 0);
 
-        final RestaurantDAO restaurantDAO = getRestaurantDAO();
+
+        //get RestaurantDAO object and get restaurant from Id
+        final RestaurantDAO restaurantDAO = new RestaurantDAO(ShowingActivity.this);
         final Restaurant restaurant = restaurantDAO.get(restaurantId);
 
         //set all EditView with the designed restaurant
@@ -48,6 +50,9 @@ public class ShowingActivity extends AppCompatActivity {
 
                 //update attributes of restaurant
                 restaurantDAO.update(restaurant);
+
+                setResult(RESULT_OK);
+                Log.d(TAG, "RESULT_OK");
                 finish();
             }
         });
@@ -57,20 +62,18 @@ public class ShowingActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Toast toast = Toast. makeText(ShowingActivity.this , "not update yet", Toast.LENGTH_SHORT);
+                toast.show();
+                setResult(RESULT_CANCELED);
+                Log.d(TAG, "RESULT_CANCELED");
                 finish();
             }
         });
     }
 
-    public RestaurantDAO getRestaurantDAO() {
-        return new RestaurantDAO(ShowingActivity.this);
-    }
-
+    //set data of editTexts from the designed restaurant
     public void setAllView(Restaurant restaurant) {
 
-        //input data of restaurant to editText
-        //TODO 預設值顯示
         mEditText = (EditText) findViewById(R.id.showingTitle);
         mEditText.setText(restaurant.getTitle());
 

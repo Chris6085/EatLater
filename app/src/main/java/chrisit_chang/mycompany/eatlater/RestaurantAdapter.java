@@ -35,8 +35,7 @@ public class RestaurantAdapter extends ArrayAdapter<Restaurant> {
             // 建立項目畫面元件
             restaurantView = new LinearLayout(getContext());
             String inflater = Context.LAYOUT_INFLATER_SERVICE;
-            LayoutInflater li = (LayoutInflater)
-                    getContext().getSystemService(inflater);
+            LayoutInflater li = (LayoutInflater) getContext().getSystemService(inflater);
             li.inflate(resource, restaurantView, true);
         }
         else {
@@ -51,6 +50,7 @@ public class RestaurantAdapter extends ArrayAdapter<Restaurant> {
 
         return restaurantView;
     }
+
 
     // 設定指定編號的記事資料
     public void set(int index, Restaurant restaurant) {

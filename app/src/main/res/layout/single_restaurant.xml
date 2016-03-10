@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal" >
 
-    <!-- 標題 -->
+    <!-- RestaurantAdapter使用的layout其提供array中每一個object的顯示方式 -->
     <TextView
         android:id="@+id/title_text"
         android:layout_width="0dp"
