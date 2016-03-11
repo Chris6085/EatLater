@@ -1,6 +1,7 @@
 package chrisit_chang.mycompany.eatlater;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,7 @@ import java.util.List;
 
 
 public class RestaurantAdapter extends ArrayAdapter<Restaurant> {
-
+    private static final String TAG = "RestaurantAdapter";
     // 畫面資源編號  layout_file
     private int resource;
     // 包裝的記事資料
@@ -65,4 +66,12 @@ public class RestaurantAdapter extends ArrayAdapter<Restaurant> {
         return restaurants.get(index);
     }
 
+    @Override
+    public void notifyDataSetChanged() {
+        Log.d(TAG, "notifyDataSetChanged");
+
+        RestaurantDAO restaurantDAO = new RestaurantDAO(getContext());
+        restaurantDAO.getAll();
+        super.notifyDataSetChanged();
+    }
 }

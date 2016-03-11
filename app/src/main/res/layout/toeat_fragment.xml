@@ -5,11 +5,11 @@
     android:orientation="vertical">
 
     <!-- test title -->
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"/>
+    <!--<TextView-->
+        <!--android:id="@+id/textView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:gravity="center"/>-->
 
     <!-- List -->
     <ListView android:id="@+id/android:list"

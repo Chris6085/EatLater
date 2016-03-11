@@ -41,7 +41,7 @@
         android:id="@+id/update_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/update"
+        android:text="@string/OK"
         android:layout_below="@+id/showingAssociateDiary"
         android:layout_toStartOf="@+id/update_back_button" />
 

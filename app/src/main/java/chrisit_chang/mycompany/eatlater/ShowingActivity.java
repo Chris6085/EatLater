@@ -1,9 +1,7 @@
 package chrisit_chang.mycompany.eatlater;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +16,9 @@ public class ShowingActivity extends AppCompatActivity {
     private EditText mEditText3;
     private EditText mEditText4;
 
+    private int mOption;
+    private Restaurant mRestaurant = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,16 +26,25 @@ public class ShowingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_showing);
 
         //get message from intent to retrieve the restaurant of designed id
-        Intent intent = getIntent();
-        long restaurantId = intent.getLongExtra(ToEatFragment.SHOWING_UPDATING_ID, 0);
+        final Bundle bundle =this.getIntent().getExtras();
+//        Intent intent = getIntent();
 
+        //choose which action should be started
+        mOption = bundle.getInt(MainActivity.CHOOSE_ACTIVITY);
 
-        //get RestaurantDAO object and get restaurant from Id
+        //new DAO
         final RestaurantDAO restaurantDAO = new RestaurantDAO(ShowingActivity.this);
-        final Restaurant restaurant = restaurantDAO.get(restaurantId);
 
-        //set all EditView with the designed restaurant
-        setAllView(restaurant);
+
+        //如果是更新的話  要將餐廳資料取出放至mRestaurant上
+        if(mOption == MainActivity.REQUEST_UPDATE) {
+            long restaurantId = bundle.getLong(ToEatFragment.SHOWING_ACTIVITY_RES_ID);
+            mRestaurant = restaurantDAO.get(restaurantId);
+//            setInitialView(mRestaurant);
+        }
+
+        //設置初始view
+        setInitialView(mRestaurant);
 
         //set update_button
         Button button = (Button) findViewById(R.id.update_button);
@@ -42,17 +52,24 @@ public class ShowingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //set attributes of the new restaurant
-                restaurant.setTitle(mEditText.getText().toString());
-                restaurant.setNotes(mEditText2.getText().toString());
-                restaurant.setTel(mEditText3.getText().toString());
-                restaurant.setAssociateDiary(mEditText4.getText().toString());
+                //TODO 新增修改沒有與刪除在一起處理 刪除直接在fragment
+                //handle ADD and UPDATE options
+                switch (mOption) {
+                    case MainActivity.REQUEST_UPDATE:
 
-                //update attributes of restaurant
-                restaurantDAO.update(restaurant);
-
-                setResult(RESULT_OK);
-                Log.d(TAG, "RESULT_OK");
+                        //從editText中取出text放入mRestaurant
+                        //最後將mRestaurant存入DB
+                        restaurantDAO.update(returnRestaurantProbablyWithData(mRestaurant));
+                        setResult(RESULT_OK);
+                        break;
+                    case MainActivity.REQUEST_ADD:
+                        restaurantDAO.insert(returnRestaurantProbablyWithData(mRestaurant));
+                        setResult(RESULT_OK);
+                        break;
+                    default:
+                        setResult(RESULT_CANCELED);
+                        break;
+                }
                 finish();
             }
         });
@@ -62,29 +79,45 @@ public class ShowingActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast toast = Toast. makeText(ShowingActivity.this , "not update yet", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(ShowingActivity.this, "not update yet", Toast.LENGTH_SHORT);
                 toast.show();
                 setResult(RESULT_CANCELED);
-                Log.d(TAG, "RESULT_CANCELED");
                 finish();
             }
         });
     }
 
     //set data of editTexts from the designed restaurant
-    public void setAllView(Restaurant restaurant) {
+    public void setInitialView(Restaurant restaurant) {
 
         mEditText = (EditText) findViewById(R.id.showingTitle);
-        mEditText.setText(restaurant.getTitle());
-
         mEditText2 = (EditText) findViewById(R.id.showingNotes);
-        mEditText2.setText(restaurant.getNotes());
-
         mEditText3= (EditText) findViewById(R.id.showingTel);
-        mEditText3.setText(restaurant.getTel());
-
         mEditText4= (EditText) findViewById(R.id.showingAssociateDiary);
-        mEditText4.setText(restaurant.getAssociateDiary());
 
+        //更新的情況，利用傳來的restaurant 設定 editText
+        if(restaurant != null) {
+            mEditText.setText(restaurant.getTitle());
+            mEditText2.setText(restaurant.getNotes());
+            mEditText3.setText(restaurant.getTel());
+            mEditText4.setText(restaurant.getAssociateDiary());
+        }
+    }
+
+
+
+    public Restaurant returnRestaurantProbablyWithData(Restaurant restaurant) {
+        if(restaurant == null) {
+            //establish a new restaurant object
+            restaurant = new Restaurant();
+        }
+
+        //set attributes of the new restaurant from EditText
+        restaurant.setTitle(mEditText.getText().toString());
+        restaurant.setNotes(mEditText2.getText().toString());
+        restaurant.setTel(mEditText3.getText().toString());
+        restaurant.setAssociateDiary(mEditText4.getText().toString());
+
+        return restaurant;
     }
 }

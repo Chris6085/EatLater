@@ -18,8 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddingActivity" />
         <activity android:name=".ShowingActivity" />
+
+        <service
+            android:name=".SetAllEditTextService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

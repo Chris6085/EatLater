@@ -1,5 +1,6 @@
 package chrisit_chang.mycompany.eatlater;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -11,26 +12,30 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
+    //for requestCode of startActivityForResult()
     public static final int REQUEST_ID_SHOWING_ACTIVITY = 0;
     public static final int REQUEST_ID_ADDING_ACTIVITY = 1;
 
-    public static final String ADD_ACTIVITY = "add";
-    public static final String Update_ACTIVITY = "update";
+    //for operation of user's choice
+    public static final String CHOOSE_ACTIVITY = "chrisit_chang.mycompany.eatlater.choose.option";
     public static final int REQUEST_ADD = 0;
-    public static final int REQUEST_SHOW = 1;
-
+    public static final int REQUEST_UPDATE = 1;
 
     private static final String TAG = "MainActivity";
     TabLayout mTabs;
-    FragmentPagerAdapter adapterViewPager;
+    MyPagerAdapter MyPagerAdapter;
+    ViewPager mVpPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,14 +46,14 @@ public class MainActivity extends AppCompatActivity {
 
         //set TabLayout_Tab
         mTabs = (android.support.design.widget.TabLayout) findViewById(R.id.tabs);
-        mTabs.addTab(mTabs.newTab().setText("Tab 1"));
-        mTabs.addTab(mTabs.newTab().setText("Tab 2"));
+        mTabs.addTab(mTabs.newTab().setText("ToEat"));
+        mTabs.addTab(mTabs.newTab().setText("Eaten"));
 
         //set TabLayout_ViewPager
-        ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
-        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
-        vpPager.setAdapter(adapterViewPager);
-        vpPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabs));
+        mVpPager = (ViewPager) findViewById(R.id.vpPager);
+        MyPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+        mVpPager.setAdapter(MyPagerAdapter);
+        mVpPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabs));
 
 
         //set FloatingActionButton
@@ -57,8 +62,11 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddingActivity.class);
-//                intent.putExtra(ADD_ACTIVITY, REQUEST_ADD);
+                Intent intent = new Intent(MainActivity.this, ShowingActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt(MainActivity.CHOOSE_ACTIVITY, MainActivity.REQUEST_ADD);
+
+                intent.putExtras(bundle);
                 startActivityForResult(intent, MainActivity.REQUEST_ID_ADDING_ACTIVITY);
             }
         });
@@ -66,9 +74,33 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult in MainActivity");
+
+
+        //TODO 新增之後需要重載
+        switch (requestCode) {
+            //add operation
+            case MainActivity.REQUEST_ID_ADDING_ACTIVITY:
+                if(resultCode == Activity.RESULT_OK) {
+
+                    //get PagerAdapter
+                    MyPagerAdapter myPagerAdapter = (MyPagerAdapter) mVpPager.getAdapter();
+                    if(myPagerAdapter != null) {
+                        //get fragment and update listView
+                        ToEatFragment toEatFragment = (ToEatFragment) myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
+
+                        //update view with new data after add
+                        toEatFragment.updateListView();
+                    } else {
+                        Log.d(TAG, "myPagerAdapter == null");
+                    }
+                } else {
+                    Toast toast = Toast. makeText(MainActivity.this , "user cancels the operation", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                break;
+        }
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "bye");
+
     }
 
     @Override
@@ -95,7 +127,11 @@ public class MainActivity extends AppCompatActivity {
 
     //implement ViewPagerAdapter
     public static class MyPagerAdapter extends FragmentPagerAdapter {
+
         private static int NUM_ITEMS = 2;
+
+        //紀錄key to fragment的array
+        private SparseArray<Fragment> registeredFragments = new SparseArray<>();
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -112,13 +148,44 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0: // Fragment # 0 - This will show FirstFragment
-                    return ToEatFragment.newInstance(0, "Page # 1");
+//                    Log.d(TAG, "getItem="+ position);
+                    return ToEatFragment.newInstance(0);
+
                 case 1: // Fragment # 0 - This will show FirstFragment different title
-                    //TODO: implement the eaten fragment
-                    return ToEatFragment.newInstance(1, "Page # 2");
+                    //TODO: implement the eaten fragment and number without hardcode
+//                    Log.d(TAG, "getItem="+ position);
+                    return ToEatFragment.newInstance(1);
                 default:
                     return null;
             }
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            //Log.d(TAG, "instantiateItem/+position" + position);
+            Object obj = super.instantiateItem(container, position);
+            if (obj instanceof Fragment) {
+                // record the fragment tag here.
+                Fragment f = (Fragment) obj;
+                registeredFragments.put(position, f);
+            }
+            return obj;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            registeredFragments.remove(position);
+            super.destroyItem(container, position, object);
+        }
+
+//        @Override
+//        public int getItemPosition(Object object) {
+//            return super.getItemPosition(object);
+//        }
+
+        //從sparseArray中取出fragment by position(key)
+        public Fragment getRegisteredFragment(int position) {
+            return registeredFragments.get(position);
         }
 
         // Returns the page title for the top indicator
@@ -128,5 +195,4 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
 }

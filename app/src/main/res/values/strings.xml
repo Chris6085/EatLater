@@ -10,5 +10,7 @@
     <string name="back">Back</string>
 
     <string name="update">Update</string>
+    <string name="delete">Delete</string>
+
 
 </resources>
