@@ -1,11 +1,13 @@
 package chrisit_chang.mycompany.eatlater;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class ShowingActivity extends AppCompatActivity {
 
@@ -16,9 +18,11 @@ public class ShowingActivity extends AppCompatActivity {
     private EditText mEditText3;
     private EditText mEditText4;
 
+    //access which activity being used
     private int mOption;
-    private Restaurant mRestaurant = null;
 
+    //var restaurant
+    private Restaurant mRestaurant = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +30,7 @@ public class ShowingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_showing);
 
         //get message from intent to retrieve the restaurant of designed id
-        final Bundle bundle =this.getIntent().getExtras();
+        final Bundle bundle = this.getIntent().getExtras();
 //        Intent intent = getIntent();
 
         //choose which action should be started
@@ -35,9 +39,8 @@ public class ShowingActivity extends AppCompatActivity {
         //new DAO
         final RestaurantDAO restaurantDAO = new RestaurantDAO(ShowingActivity.this);
 
-
         //如果是更新的話  要將餐廳資料取出放至mRestaurant上
-        if(mOption == MainActivity.REQUEST_UPDATE) {
+        if (mOption == MainActivity.REQUEST_UPDATE) {
             long restaurantId = bundle.getLong(ToEatFragment.SHOWING_ACTIVITY_RES_ID);
             mRestaurant = restaurantDAO.get(restaurantId);
 //            setInitialView(mRestaurant);
@@ -52,25 +55,34 @@ public class ShowingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //TODO 新增修改沒有與刪除在一起處理 刪除直接在fragment
+                //TODO 新增修改沒有與刪除在一起處理
                 //handle ADD and UPDATE options
                 switch (mOption) {
                     case MainActivity.REQUEST_UPDATE:
 
                         //從editText中取出text放入mRestaurant
                         //最後將mRestaurant存入DB
-                        restaurantDAO.update(returnRestaurantProbablyWithData(mRestaurant));
+                        restaurantDAO.update(getRestaurantProbablyWithData(mRestaurant));
                         setResult(RESULT_OK);
+                        finish();
                         break;
                     case MainActivity.REQUEST_ADD:
-                        restaurantDAO.insert(returnRestaurantProbablyWithData(mRestaurant));
-                        setResult(RESULT_OK);
+                        if (checkTitleIsNotEmpty()) {
+                            //Column is  not Empty
+                            restaurantDAO.insert(getRestaurantProbablyWithData(mRestaurant));
+                            setResult(RESULT_OK);
+                            finish();
+                        } else {
+                            setResult(RESULT_CANCELED);
+                            //remind users
+                            AlertDialog alertDialog = buildAnAlertDialog();
+                            alertDialog.show();
+                        }
                         break;
                     default:
                         setResult(RESULT_CANCELED);
                         break;
                 }
-                finish();
             }
         });
 
@@ -79,8 +91,6 @@ public class ShowingActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast toast = Toast.makeText(ShowingActivity.this, "not update yet", Toast.LENGTH_SHORT);
-                toast.show();
                 setResult(RESULT_CANCELED);
                 finish();
             }
@@ -92,11 +102,11 @@ public class ShowingActivity extends AppCompatActivity {
 
         mEditText = (EditText) findViewById(R.id.showingTitle);
         mEditText2 = (EditText) findViewById(R.id.showingNotes);
-        mEditText3= (EditText) findViewById(R.id.showingTel);
-        mEditText4= (EditText) findViewById(R.id.showingAssociateDiary);
+        mEditText3 = (EditText) findViewById(R.id.showingTel);
+        mEditText4 = (EditText) findViewById(R.id.showingAssociateDiary);
 
         //更新的情況，利用傳來的restaurant 設定 editText
-        if(restaurant != null) {
+        if (restaurant != null) {
             mEditText.setText(restaurant.getTitle());
             mEditText2.setText(restaurant.getNotes());
             mEditText3.setText(restaurant.getTel());
@@ -104,10 +114,38 @@ public class ShowingActivity extends AppCompatActivity {
         }
     }
 
+    //check title
+    public boolean checkTitleIsNotEmpty() {
+        Boolean IsNotEmpty = true;
 
+        if (TextUtils.isEmpty(mEditText.getText().toString())) {
+            IsNotEmpty = false;
+        }
+        return IsNotEmpty;
+    }
 
-    public Restaurant returnRestaurantProbablyWithData(Restaurant restaurant) {
-        if(restaurant == null) {
+    public AlertDialog buildAnAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.dialog_message)
+                .setTitle(R.string.dialog_title);
+
+        builder.setPositiveButton(R.string.confirm_btn, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //back to MainActivity
+                finish();
+            }
+        });
+        builder.setNegativeButton(R.string.retype_btn, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //do nothing
+            }
+        });
+
+        return builder.create();
+    }
+
+    public Restaurant getRestaurantProbablyWithData(Restaurant restaurant) {
+        if (restaurant == null) {
             //establish a new restaurant object
             restaurant = new Restaurant();
         }
@@ -117,7 +155,6 @@ public class ShowingActivity extends AppCompatActivity {
         restaurant.setNotes(mEditText2.getText().toString());
         restaurant.setTel(mEditText3.getText().toString());
         restaurant.setAssociateDiary(mEditText4.getText().toString());
-
         return restaurant;
     }
 }

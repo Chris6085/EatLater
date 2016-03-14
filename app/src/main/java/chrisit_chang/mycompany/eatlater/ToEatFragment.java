@@ -69,7 +69,7 @@ public class ToEatFragment extends ListFragment {
         super.onActivityCreated(savedInstanceState);
 
         //final initialization
-        //set ContextMenu For Delete operation
+        //ContextMenu For Delete operation
         registerForContextMenu(getListView());
     }
 
@@ -100,14 +100,17 @@ public class ToEatFragment extends ListFragment {
         switch (requestCode) {
             //show and update operation
             case MainActivity.REQUEST_ID_SHOWING_ACTIVITY:
-                if(resultCode == Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK) {
 
                     //update view with new data after update
                     this.updateListView();
-                    Toast toast = Toast. makeText(getActivity() , "update is completed", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getActivity(), "update is completed", Toast.LENGTH_SHORT);
                     toast.show();
                 }
                 break;
+            default:
+                Toast toast = Toast.makeText(getActivity(), "something is wrong", Toast.LENGTH_SHORT);
+                toast.show();
         }
     }
 
@@ -129,7 +132,7 @@ public class ToEatFragment extends ListFragment {
         if (item.getGroupId() == UNIQUE_FRAGMENT_GROUP_ID) {
             //取得user選取資訊 (item on long press operation)
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-            switch(item.getItemId()) {
+            switch (item.getItemId()) {
                 //delete option
                 case MENU_BUTTON_1:
                     //new DAO

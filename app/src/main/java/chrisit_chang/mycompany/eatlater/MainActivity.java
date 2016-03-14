@@ -75,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-
-        //TODO 新增之後需要重載
         switch (requestCode) {
             //add operation
             case MainActivity.REQUEST_ID_ADDING_ACTIVITY:
@@ -85,16 +83,16 @@ public class MainActivity extends AppCompatActivity {
                     //get PagerAdapter
                     MyPagerAdapter myPagerAdapter = (MyPagerAdapter) mVpPager.getAdapter();
                     if(myPagerAdapter != null) {
-                        //get fragment and update listView
+                        //get fragment
                         ToEatFragment toEatFragment = (ToEatFragment) myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
 
                         //update view with new data after add
                         toEatFragment.updateListView();
                     } else {
-                        Log.d(TAG, "myPagerAdapter == null");
+//                        Log.d(TAG, "myPagerAdapter == null");
                     }
                 } else {
-                    Toast toast = Toast. makeText(MainActivity.this , "user cancels the operation", Toast.LENGTH_SHORT);
+                    Toast toast = Toast. makeText(MainActivity.this , "The draft is dropped", Toast.LENGTH_SHORT);
                     toast.show();
                 }
                 break;

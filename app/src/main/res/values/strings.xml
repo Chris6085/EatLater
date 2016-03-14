@@ -12,5 +12,10 @@
     <string name="update">Update</string>
     <string name="delete">Delete</string>
 
+    <string name="dialog_message">The title is empty.</string>
+    <string name="dialog_title">Keep Going?</string>
+    <string name="confirm_btn">Confirm</string>
+    <string name="retype_btn">Retype</string>
+
 
 </resources>
