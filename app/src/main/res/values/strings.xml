@@ -16,9 +16,10 @@
     <string name="dialog_title">The title is empty</string>
     <string name="confirm_btn">Yes</string>
     <string name="retype_btn">Retype</string>
+    <string name="eaten_btn">Check!</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
 
 
 </resources>

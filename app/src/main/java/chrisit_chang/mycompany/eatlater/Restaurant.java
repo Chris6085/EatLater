@@ -9,18 +9,21 @@ public class Restaurant {
     private String mTel;
     private String mAssociateDiary;
     private String mImageName;
+    private int mEatenFlag;
 
     public Restaurant() {
         mTitle = "";
         mNotes = "";
+        mEatenFlag = 0;
     }
 
-    public Restaurant(String title, String notes, String tel, String associateDiary, String imageName) {
+    public Restaurant(String title, String notes, String tel, String associateDiary, String imageName, int eatenFlag) {
         this.mTitle = title;
         this.mNotes = notes;
         this.mTel = tel;
         this.mAssociateDiary = associateDiary;
         this.mImageName = imageName;
+        this.mEatenFlag = eatenFlag;
     }
 
     public long getId() {
@@ -66,4 +69,8 @@ public class Restaurant {
     public void setImageName(String ImageName) {
         this.mImageName = ImageName;
     }
+
+    public int getEatenFlag() { return mEatenFlag; }
+
+    public void setEatenFlag(int eatenFlag) { this.mEatenFlag = eatenFlag; }
 }

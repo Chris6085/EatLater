@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,8 +31,11 @@ public class ShowingActivity extends AppCompatActivity {
     private EditText mEditText4;
     private ImageView mPicture;
 
-    //access which activity being used
+    //watch which activity being used
     private int mOption;
+
+    //which page start this activity
+    private int mCurrentPage;
 
     //vars related to restaurant
     private Restaurant mRestaurant = null;
@@ -48,8 +52,8 @@ public class ShowingActivity extends AppCompatActivity {
         //get message from intent to retrieve the restaurant of designed id
         final Bundle bundle = this.getIntent().getExtras();
 
-        //choose which action should be started
         mOption = bundle.getInt(MainActivity.CHOOSE_ACTIVITY);
+        mCurrentPage = bundle.getInt(MainActivity.WHICH_PAGE);
 
         //new DAO for future use
         mRestaurantDAO = initialRestaurantDAOInstance(this);
@@ -122,22 +126,19 @@ public class ShowingActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //TODO 新增修改沒有與刪除在一起處理
                 //deal with Insert and UPDATE options
                 switch (mOption) {
                     case MainActivity.REQUEST_UPDATE:
 
-                        //從editText中取出text放入mRestaurant
-                        //最後將mRestaurant存入DB
-                        mRestaurantDAO.update(getRestaurantProbablyWithData(mRestaurant));
+                        //save mRestaurant to DB
+                        mRestaurantDAO.update(getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
                         setResult(RESULT_OK);
                         finish();
                         break;
                     case MainActivity.REQUEST_ADD:
                         if (checkTitleIsNotEmpty()) {
                             //Column is  not Empty
-                            mRestaurantDAO.insert(getRestaurantProbablyWithData(mRestaurant));
+                            mRestaurantDAO.insert(getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
                             setResult(RESULT_OK);
                             finish();
                         } else {
@@ -183,6 +184,24 @@ public class ShowingActivity extends AppCompatActivity {
                 }
             }
         });
+
+        //set eaten_button
+        Button eatenButton = (Button) findViewById(R.id.eaten_button);
+        eatenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //update the column EatenFlag of restaurant to eaten
+                mRestaurantDAO.update(changeToEatRestaurantIntoEaten(mRestaurant));
+
+                setResult(RESULT_OK);
+                finish();
+            }
+        });
+
+        //只有在toEat Fragment中和action = update時才會出現
+        if (mCurrentPage == MainActivity.TO_EAT_FRAGMENT && mOption == MainActivity.REQUEST_UPDATE) {
+            eatenButton.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -215,6 +234,7 @@ public class ShowingActivity extends AppCompatActivity {
 
     private File configFileName(String prefix, String extension) {
 
+        //TODO fileName problem
         if (mRestaurant == null) {
             // 產生檔案名稱
             mFileName = FileUtil.getUniqueFileName();
@@ -260,10 +280,20 @@ public class ShowingActivity extends AppCompatActivity {
         return builder.create();
     }
 
-    public Restaurant getRestaurantProbablyWithData(Restaurant restaurant) {
+    //從editText中取出text放入mRestaurant
+    public Restaurant getRestaurantProbablyWithData(Restaurant restaurant, int page) {
+
+        //if null, it must the insertion process
         if (restaurant == null) {
             //establish a new restaurant object
             restaurant = new Restaurant();
+        }
+
+        //save the EatenFlag determined by page
+        if (page == MainActivity.TO_EAT_FRAGMENT) {
+            restaurant.setEatenFlag(RestaurantDAO.FLAG_NOT_EATEN);
+        } else if (page == MainActivity.EATEN_FRAGMENT) {
+            restaurant.setEatenFlag(RestaurantDAO.FLAG_EATEN);
         }
 
         //set attributes of the new restaurant from EditText
@@ -271,6 +301,16 @@ public class ShowingActivity extends AppCompatActivity {
         restaurant.setNotes(mEditText2.getText().toString());
         restaurant.setTel(mEditText3.getText().toString());
         restaurant.setAssociateDiary(mEditText4.getText().toString());
+        return restaurant;
+    }
+
+    public Restaurant changeToEatRestaurantIntoEaten(Restaurant restaurant) {
+        if (restaurant == null) {
+            return null;
+        }
+
+        //set EatenFlag of restaurant
+        restaurant.setEatenFlag(RestaurantDAO.FLAG_EATEN);
         return restaurant;
     }
 }

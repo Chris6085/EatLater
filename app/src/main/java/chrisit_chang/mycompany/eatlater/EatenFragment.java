@@ -1,7 +1,7 @@
 package chrisit_chang.mycompany.eatlater;
 
+
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -12,19 +12,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 
-public class ToEatFragment extends ListFragment {
-
-    ListViewUpdateListener mCallback;
+public class EatenFragment extends ListFragment {
 
     //used by the key of bundle for restaurantId
     public static final String SHOWING_ACTIVITY_RES_ID = "chrisit_chang.myCompany.eatLater.RestaurantId";
 
-    private static final String TAG = "ToEatFragment";
+    private static final String TAG = "EatenFragment";
 
     protected static final int MENU_BUTTON_1 = Menu.FIRST;
     protected static final int MENU_BUTTON_2 = Menu.FIRST + 1;
@@ -36,31 +34,17 @@ public class ToEatFragment extends ListFragment {
     //DAO
     private RestaurantDAO mRestaurantDAO;
 
-    // Container Activity must implement this interface
-    public interface ListViewUpdateListener {
-        public void eatenFragmentUpdate();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            mCallback = (ListViewUpdateListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement ListViewUpdateListener");
-        }
-    }
-
-
     // newInstance constructor for creating fragment with arguments
-    public static ToEatFragment newInstance(int page) {
-        ToEatFragment toEatFragment = new ToEatFragment();
+    public static EatenFragment newInstance(int page) {
+        EatenFragment eatenFragment = new EatenFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", page);
-        toEatFragment.setArguments(args);
-        return toEatFragment;
+        eatenFragment.setArguments(args);
+
+
+        return eatenFragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,20 +58,21 @@ public class ToEatFragment extends ListFragment {
             mRestaurantDAO.sample();
         }
 
-        //get toEat Data
+        //get Eaten Data
         setListAdapter(new RestaurantAdapter(getActivity(), R.layout.single_restaurant
-                , mRestaurantDAO.getAllOfRestaurantsWithFlag(RestaurantDAO.FLAG_NOT_EATEN)));
+                , mRestaurantDAO.getAllOfRestaurantsWithFlag(RestaurantDAO.FLAG_EATEN)));
     }
 
     // Inflate the view for the fragment based on layout XML
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.toeat_fragment, container, false);
+        return inflater.inflate(R.layout.fragment_eaten, container, false);
 //        TextView tvLabel = (TextView) view.findViewById(R.id.textView);
 //        tvLabel.setText(page + " -- " + title);
 
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -130,21 +115,14 @@ public class ToEatFragment extends ListFragment {
             case MainActivity.REQUEST_ID_SHOWING_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
 
-                    //TODO update another fragment
                     //update view with new data after update
                     this.updateListView();
-
-                    //communicate with EatenFragment by MainActivity implemented interface mCallback
-                    mCallback.eatenFragmentUpdate();
-
-                    Toast toast = Toast.makeText(getActivity()
-                            , "update is completed", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getActivity(), "update is completed", Toast.LENGTH_SHORT);
                     toast.show();
                 }
                 break;
             default:
-                Toast toast = Toast.makeText(getActivity()
-                        , "something is wrong", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getActivity(), "something is wrong", Toast.LENGTH_SHORT);
                 toast.show();
         }
     }
@@ -159,14 +137,14 @@ public class ToEatFragment extends ListFragment {
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
-    //長壓提供刪除功能
+    //long press for delete
     @Override
     public boolean onContextItemSelected(MenuItem item) {
 
         //判斷被長壓的是哪一個fragment中的ContextMenu產生
         if (item.getGroupId() == UNIQUE_FRAGMENT_GROUP_ID) {
             //取得user選取資訊 (item on long press operation)
-            AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
             switch (item.getItemId()) {
                 //delete option
                 case MENU_BUTTON_1:
@@ -191,6 +169,6 @@ public class ToEatFragment extends ListFragment {
     public void updateListView() {
         //update
         setListAdapter(new RestaurantAdapter(getActivity(), R.layout.single_restaurant
-                , mRestaurantDAO.getAllOfRestaurantsWithFlag(RestaurantDAO.FLAG_NOT_EATEN)));
+                , mRestaurantDAO.getAllOfRestaurantsWithFlag(RestaurantDAO.FLAG_EATEN)));
     }
 }

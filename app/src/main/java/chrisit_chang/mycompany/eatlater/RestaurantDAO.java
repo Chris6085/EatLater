@@ -4,11 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_EATEN_FLAG;
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_ASSOCIATE_DIARY;
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_IMAGE_FILE;
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_TITLE;
@@ -20,6 +20,9 @@ public class RestaurantDAO {
 
     private static final String TAG = "RestaurantDAO";
 
+    public static final int FLAG_NOT_EATEN = 0;
+    public static final int FLAG_EATEN = 1;
+
     // 編號表格欄位名稱，固定不變
     public static final String KEY_ID = "_id";
 
@@ -30,7 +33,8 @@ public class RestaurantDAO {
                     COLUMN_NOTE + " TEXT, " +
                     COLUMN_TEL + " TEXT, " +
                     COLUMN_NAME_ASSOCIATE_DIARY + " TEXT, " +
-                    COLUMN_NAME_IMAGE_FILE + " TEXT);";
+                    COLUMN_NAME_IMAGE_FILE + " TEXT, " +
+                    COLUMN_EATEN_FLAG + " INT);";
 
     // 資料庫物件
     private SQLiteDatabase db;
@@ -58,6 +62,7 @@ public class RestaurantDAO {
         cv.put(COLUMN_TEL, restaurant.getTel());
         cv.put(COLUMN_NAME_ASSOCIATE_DIARY, restaurant.getAssociateDiary());
         cv.put(COLUMN_NAME_IMAGE_FILE, restaurant.getImageName());
+        cv.put(COLUMN_EATEN_FLAG, restaurant.getEatenFlag());
 
 
         // 新增一筆資料並取得編號
@@ -84,6 +89,7 @@ public class RestaurantDAO {
         cv.put(COLUMN_TEL, restaurant.getTel());
         cv.put(COLUMN_NAME_ASSOCIATE_DIARY, restaurant.getAssociateDiary());
         cv.put(COLUMN_NAME_IMAGE_FILE, restaurant.getImageName());
+        cv.put(COLUMN_EATEN_FLAG, restaurant.getEatenFlag());
 
 
         // 設定修改資料的條件為編號
@@ -100,6 +106,29 @@ public class RestaurantDAO {
         String where = KEY_ID + "=" + id;
         // 刪除指定編號資料並回傳刪除是否成功
         return db.delete(TABLE_NAME, where, null) > 0;
+    }
+
+    // 讀取所有記事資料
+    public List<Restaurant> getAllOfRestaurantsWithFlag(int eatenFlag) {
+
+        String where;
+        if (eatenFlag == 1) {
+            where = COLUMN_EATEN_FLAG + "=" + FLAG_EATEN;
+        } else {
+            where = COLUMN_EATEN_FLAG + "=" + FLAG_NOT_EATEN;
+        }
+
+        List<Restaurant> result = new ArrayList<>();
+        try (Cursor cursor = db.query(TABLE_NAME, null, where, null, null, null, null, null)) {
+            if (cursor == null || cursor.getCount() <= 0) {
+                return null;
+            }
+
+            while (cursor.moveToNext()) {
+                result.add(getRecord(cursor));
+            }
+        }
+        return result;
     }
 
     // 讀取所有記事資料
@@ -151,6 +180,7 @@ public class RestaurantDAO {
         result.setTel(cursor.getString(3));
         result.setAssociateDiary(cursor.getString(4));
         result.setImageName(cursor.getString(5));
+        result.setEatenFlag(cursor.getInt(6));
 
 //        Log.d(TAG, "id=" + result.getId());
 //        Log.d(TAG, "notes=" + result.getNotes());
@@ -178,10 +208,13 @@ public class RestaurantDAO {
 
     // 建立範例資料
     public void sample() {
-        Restaurant restaurant = new Restaurant("McDonald", "not good", "0977123456", "www.mcdonalds.com.tw", "aaa");
-        Restaurant restaurant2 = new Restaurant("KFC", "not good, too", "0988123456", "www.kfcclub.com.tw", "bbb");
+        Restaurant restaurant = new Restaurant("McDonald", "not good", "0977123456", "www.mcdonalds.com.tw", "aaa", FLAG_NOT_EATEN);
+        Restaurant restaurant2 = new Restaurant("KFC", "not good, too", "0988123456", "www.kfcclub.com.tw", "bbb", FLAG_NOT_EATEN);
+        Restaurant restaurant3 = new Restaurant("Mos", "wow!", "0987654321", "www.mos.com.tw", "ccc", FLAG_EATEN);
+        Restaurant restaurant4 = new Restaurant("BurgerKing", "QQ", "0912345678", "www.burgerking.com.tw", "ddd", FLAG_EATEN);
         insert(restaurant);
         insert(restaurant2);
+        insert(restaurant3);
+        insert(restaurant4);
     }
-
 }

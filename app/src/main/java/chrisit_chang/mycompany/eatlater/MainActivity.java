@@ -20,7 +20,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements ToEatFragment.ListViewUpdateListener{
 
 
     //for requestCode of startActivityForResult()
@@ -32,12 +33,23 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_ADD = 0;
     public static final int REQUEST_UPDATE = 1;
 
+    public static final int TO_EAT_FRAGMENT = 0;
+    public static final int EATEN_FRAGMENT = 1;
+
+    public static final String WHICH_PAGE = "saveThePageBeingPresented";
+
     private static final String TAG = "MainActivity";
 
     //UI components
     private TabLayout mTabs;
     private MyPagerAdapter MyPagerAdapter;
     private ViewPager mVpPager;
+
+    @Override
+    public void eatenFragmentUpdate() {
+        EatenFragment eatenFragment = (EatenFragment) MyPagerAdapter.getRegisteredFragment(EATEN_FRAGMENT);
+        eatenFragment.updateListView();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,37 +75,55 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //connect to TO_EAT_FRAGMENT or EATEN_FRAGMENT in ShowingActivity
+                //check the request from which page (toEat or Eaten)
+                int currentPage = mVpPager.getCurrentItem();
+
                 Intent intent = new Intent(MainActivity.this, ShowingActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putInt(MainActivity.CHOOSE_ACTIVITY, MainActivity.REQUEST_ADD);
+
+                //update needed vars: action (update) and page
+                bundle.putInt(CHOOSE_ACTIVITY, REQUEST_ADD);
+                bundle.putInt(WHICH_PAGE, currentPage);
 
                 intent.putExtras(bundle);
-                startActivityForResult(intent, MainActivity.REQUEST_ID_ADDING_ACTIVITY);
+                startActivityForResult(intent, REQUEST_ID_ADDING_ACTIVITY);
             }
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            //add operation
-            case MainActivity.REQUEST_ID_ADDING_ACTIVITY:
-                if (resultCode == Activity.RESULT_OK) {
 
-                    //get PagerAdapter
-                    MyPagerAdapter myPagerAdapter = (MyPagerAdapter) mVpPager.getAdapter();
+        if (resultCode == Activity.RESULT_OK ) {
+            if (requestCode == REQUEST_ID_ADDING_ACTIVITY) {
+                //get PagerAdapter
+                MyPagerAdapter myPagerAdapter = (MyPagerAdapter) mVpPager.getAdapter();
 
-                    //get the fragment in current page
-                    ToEatFragment toEatFragment = (ToEatFragment) myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
+                //get the current item (page)
+                switch (mVpPager.getCurrentItem()) {
+                    case TO_EAT_FRAGMENT:
+                        //get the fragment in current page
+                        ToEatFragment toEatFragment = (ToEatFragment)
+                                myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
 
-                    //update view with new data after insertion
-                    toEatFragment.updateListView();
+                        //update view with new data after insertion
+                        toEatFragment.updateListView();
+                        break;
+                    case EATEN_FRAGMENT:
+                        //get the fragment in current page
+                        EatenFragment eatenFragment = (EatenFragment)
+                                myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
 
-                } else {
-                    Toast toast = Toast.makeText(MainActivity.this, "The draft is dropped", Toast.LENGTH_SHORT);
-                    toast.show();
+                        //update view with new data after insertion
+                        eatenFragment.updateListView();
                 }
-                break;
+            }
+        } else {
+            Toast toast = Toast.makeText(this
+                    , "The draft is dropped", Toast.LENGTH_SHORT);
+            toast.show();
         }
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -141,14 +171,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0: // Fragment # 0 - This will show FirstFragment
+                case 0: // Fragment # 0 - This will show ToEatFragment
 //                    Log.d(TAG, "getItem="+ position);
                     return ToEatFragment.newInstance(0);
 
-                case 1: // Fragment # 0 - This will show FirstFragment different title
-                    //TODO: implement the eaten fragment and number without hardcode
+                case 1: // Fragment # 1 - This will show EatenFragment
 //                    Log.d(TAG, "getItem="+ position);
-                    return ToEatFragment.newInstance(1);
+                    return EatenFragment.newInstance(1);
                 default:
                     return null;
             }
