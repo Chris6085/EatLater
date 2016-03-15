@@ -14,6 +14,7 @@ public final class ToEatFoodContract {
         public static final String COLUMN_NOTE = "note";
         public static final String COLUMN_TEL = "tel";
         public static final String COLUMN_NAME_ASSOCIATE_DIARY = "associate_diary";
+        public static final String COLUMN_NAME_IMAGE_FILE = "image_file_name";
 
     }
 }

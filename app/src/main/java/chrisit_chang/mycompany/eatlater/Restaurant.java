@@ -3,61 +3,67 @@ package chrisit_chang.mycompany.eatlater;
 
 public class Restaurant {
 
-    private long id;
-    private String title;
-    private String notes;
-    private String tel;
-    private String AssociateDiary;
+    private long mId;
+    private String mTitle;
+    private String mNotes;
+    private String mTel;
+    private String mAssociateDiary;
+    private String mImageName;
 
     public Restaurant() {
-        title = "";
-        notes = "";
+        mTitle = "";
+        mNotes = "";
     }
 
-    public Restaurant(String title, String notes, String tel, String associateDiary) {
-        this.title = title;
-        this.notes = notes;
-        this.tel = tel;
-        this.AssociateDiary = associateDiary;
+    public Restaurant(String title, String notes, String tel, String associateDiary, String imageName) {
+        this.mTitle = title;
+        this.mNotes = notes;
+        this.mTel = tel;
+        this.mAssociateDiary = associateDiary;
+        this.mImageName = imageName;
     }
 
     public long getId() {
-        return id;
+        return mId;
     }
 
     public void setId(long id) {
-        this.id = id;
+        this.mId = id;
     }
 
     public String getTitle() {
-        return title;
+        return mTitle;
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.mTitle = title;
     }
 
-    public String getNotes() {
-        return notes;
-    }
+    public String getNotes() { return mNotes; }
 
     public void setNotes(String notes) {
-        this.notes = notes;
+        this.mNotes = notes;
     }
 
     public String getTel() {
-        return tel;
+        return mTel;
     }
 
     public void setTel(String tel) {
-        this.tel = tel;
+        this.mTel = tel;
     }
 
     public String getAssociateDiary() {
-        return AssociateDiary;
+        return mAssociateDiary;
     }
 
     public void setAssociateDiary(String associateDiary) {
-        this.AssociateDiary = associateDiary;
+        this.mAssociateDiary = associateDiary;
+    }
+
+    public String getImageName() { return mImageName; }
+
+    public void setImageName(String ImageName) {
+        this.mImageName = ImageName;
     }
 }

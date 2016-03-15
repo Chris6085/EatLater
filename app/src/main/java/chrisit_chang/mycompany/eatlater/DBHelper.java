@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.TABLE_NAME;
 
@@ -21,6 +22,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(RestaurantDAO.CREATE_TABLE);
+        Log.d("DBHelper", "onCreate");
     }
 
     @Override

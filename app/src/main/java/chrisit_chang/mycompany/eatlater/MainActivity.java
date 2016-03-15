@@ -33,9 +33,11 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_UPDATE = 1;
 
     private static final String TAG = "MainActivity";
-    TabLayout mTabs;
-    MyPagerAdapter MyPagerAdapter;
-    ViewPager mVpPager;
+
+    //UI components
+    private TabLayout mTabs;
+    private MyPagerAdapter MyPagerAdapter;
+    private ViewPager mVpPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         mVpPager.setAdapter(MyPagerAdapter);
         mVpPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabs));
 
-
         //set FloatingActionButton
         //goto Adding Activity
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -74,25 +75,22 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         switch (requestCode) {
             //add operation
             case MainActivity.REQUEST_ID_ADDING_ACTIVITY:
-                if(resultCode == Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK) {
 
                     //get PagerAdapter
                     MyPagerAdapter myPagerAdapter = (MyPagerAdapter) mVpPager.getAdapter();
-                    if(myPagerAdapter != null) {
-                        //get fragment
-                        ToEatFragment toEatFragment = (ToEatFragment) myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
 
-                        //update view with new data after add
-                        toEatFragment.updateListView();
-                    } else {
-//                        Log.d(TAG, "myPagerAdapter == null");
-                    }
+                    //get the fragment in current page
+                    ToEatFragment toEatFragment = (ToEatFragment) myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
+
+                    //update view with new data after insertion
+                    toEatFragment.updateListView();
+
                 } else {
-                    Toast toast = Toast. makeText(MainActivity.this , "The draft is dropped", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(MainActivity.this, "The draft is dropped", Toast.LENGTH_SHORT);
                     toast.show();
                 }
                 break;
@@ -126,10 +124,8 @@ public class MainActivity extends AppCompatActivity {
     //implement ViewPagerAdapter
     public static class MyPagerAdapter extends FragmentPagerAdapter {
 
+        //number of pages
         private static int NUM_ITEMS = 2;
-
-        //紀錄key to fragment的array
-        private SparseArray<Fragment> registeredFragments = new SparseArray<>();
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -158,6 +154,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        //紀錄key to fragment的array
+        private SparseArray<Fragment> registeredFragments = new SparseArray<>();
+
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             //Log.d(TAG, "instantiateItem/+position" + position);
@@ -176,11 +175,6 @@ public class MainActivity extends AppCompatActivity {
             super.destroyItem(container, position, object);
         }
 
-//        @Override
-//        public int getItemPosition(Object object) {
-//            return super.getItemPosition(object);
-//        }
-
         //從sparseArray中取出fragment by position(key)
         public Fragment getRegisteredFragment(int position) {
             return registeredFragments.get(position);
@@ -191,6 +185,5 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return "Page " + position;
         }
-
     }
 }

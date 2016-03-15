@@ -37,20 +37,45 @@
         android:layout_below="@id/showingTel"
         android:hint="@string/addURL"/>
 
-    <Button
+    <ImageButton
+        android:id="@+id/camera_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_menu_camera"
+        android:layout_below="@+id/showingAssociateDiary"
+        android:layout_alignStart="@+id/picture" />
+
+    <ImageButton
         android:id="@+id/update_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/OK"
+        android:src="@android:drawable/ic_menu_send"
         android:layout_below="@+id/showingAssociateDiary"
         android:layout_toStartOf="@+id/update_back_button" />
 
-    <Button
+    <ImageButton
         android:id="@+id/update_back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/back"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:layout_below="@id/showingAssociateDiary"
         android:layout_alignParentEnd="true" />
+
+    <!-- 顯示圖片 -->
+    <ImageView
+        android:id="@+id/picture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:padding="6sp"
+        android:visibility="invisible"
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="2sp"
+        android:layout_below="@+id/camera_button"
+        android:layout_alignParentStart="true" />
+    <!--android:background="@drawable/retangle_drawable"-->
+
 
 </RelativeLayout>

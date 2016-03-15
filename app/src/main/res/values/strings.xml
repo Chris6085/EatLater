@@ -12,10 +12,13 @@
     <string name="update">Update</string>
     <string name="delete">Delete</string>
 
-    <string name="dialog_message">The title is empty.</string>
-    <string name="dialog_title">Keep Going?</string>
-    <string name="confirm_btn">Confirm</string>
+    <string name="dialog_message">Are you sure to leave without saving?</string>
+    <string name="dialog_title">The title is empty</string>
+    <string name="confirm_btn">Yes</string>
     <string name="retype_btn">Retype</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

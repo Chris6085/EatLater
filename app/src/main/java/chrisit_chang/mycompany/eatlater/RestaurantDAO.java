@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_ASSOCIATE_DIARY;
+import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_IMAGE_FILE;
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_TITLE;
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NOTE;
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_TEL;
@@ -28,7 +29,8 @@ public class RestaurantDAO {
                     COLUMN_NAME_TITLE + " TEXT, " +
                     COLUMN_NOTE + " TEXT, " +
                     COLUMN_TEL + " TEXT, " +
-                    COLUMN_NAME_ASSOCIATE_DIARY + " TEXT);";
+                    COLUMN_NAME_ASSOCIATE_DIARY + " TEXT, " +
+                    COLUMN_NAME_IMAGE_FILE + " TEXT);";
 
     // 資料庫物件
     private SQLiteDatabase db;
@@ -55,6 +57,8 @@ public class RestaurantDAO {
         cv.put(COLUMN_NOTE, restaurant.getNotes());
         cv.put(COLUMN_TEL, restaurant.getTel());
         cv.put(COLUMN_NAME_ASSOCIATE_DIARY, restaurant.getAssociateDiary());
+        cv.put(COLUMN_NAME_IMAGE_FILE, restaurant.getImageName());
+
 
         // 新增一筆資料並取得編號
         // 第一個參數是表格名稱
@@ -79,6 +83,7 @@ public class RestaurantDAO {
         cv.put(COLUMN_NOTE, restaurant.getNotes());
         cv.put(COLUMN_TEL, restaurant.getTel());
         cv.put(COLUMN_NAME_ASSOCIATE_DIARY, restaurant.getAssociateDiary());
+        cv.put(COLUMN_NAME_IMAGE_FILE, restaurant.getImageName());
 
 
         // 設定修改資料的條件為編號
@@ -90,24 +95,25 @@ public class RestaurantDAO {
     }
 
     // 刪除參數指定編號的資料
-    public boolean delete(long id){
+    public boolean delete(long id) {
         // 設定條件為編號，格式為「欄位名稱=資料」
         String where = KEY_ID + "=" + id;
         // 刪除指定編號資料並回傳刪除是否成功
-        return db.delete(TABLE_NAME, where , null) > 0;
+        return db.delete(TABLE_NAME, where, null) > 0;
     }
 
     // 讀取所有記事資料
     public List<Restaurant> getAll() {
         List<Restaurant> result = new ArrayList<>();
-        Cursor cursor = db.query(
-                TABLE_NAME, null, null, null, null, null, null, null);
+        try (Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null, null)) {
+            if (cursor == null || cursor.getCount() <= 0) {
+                return null;
+            }
 
-        while (cursor.moveToNext()) {
-            result.add(getRecord(cursor));
+            while (cursor.moveToNext()) {
+                result.add(getRecord(cursor));
+            }
         }
-
-        cursor.close();
         return result;
     }
 
@@ -118,17 +124,18 @@ public class RestaurantDAO {
         // 使用編號為查詢條件
         String where = KEY_ID + "=" + id;
         // 執行查詢
-        Cursor result = db.query(
-                TABLE_NAME, null, where, null, null, null, null, null);
+        try (Cursor result = db.query(TABLE_NAME, null, where, null, null, null, null, null)) {
 
-        // 如果有查詢結果
-        if (result.moveToFirst()) {
-            // 讀取包裝一筆資料的物件
-            restaurant = getRecord(result);
+            if (result == null || result.getCount() <= 0) {
+                return null;
+            }
+
+            // 如果有查詢結果
+            if (result.moveToFirst()) {
+                // 讀取包裝一筆資料的物件
+                restaurant = getRecord(result);
+            }
         }
-
-        // 關閉Cursor物件
-        result.close();
         // 回傳結果
         return restaurant;
     }
@@ -143,6 +150,7 @@ public class RestaurantDAO {
         result.setNotes(cursor.getString(2));
         result.setTel(cursor.getString(3));
         result.setAssociateDiary(cursor.getString(4));
+        result.setImageName(cursor.getString(5));
 
 //        Log.d(TAG, "id=" + result.getId());
 //        Log.d(TAG, "notes=" + result.getNotes());
@@ -155,26 +163,25 @@ public class RestaurantDAO {
     // 取得資料數量
     public int getCount() {
         int result = 0;
-        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME, null);
+        try (Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME, null)) {
+            if (cursor == null || cursor.getCount() <= 0) {
+                return result;
+            }
 
-        if (cursor.moveToNext()) {
-            result = cursor.getInt(0);
+            if (cursor.moveToNext()) {
+                result = cursor.getInt(0);
+            }
         }
-
-        cursor.close();
 
         return result;
     }
 
     // 建立範例資料
     public void sample() {
-
-        Restaurant restaurant = new Restaurant("McDonald", "not good", "0977123456", "www.mcdonalds.com.tw");
-        Restaurant restaurant2 = new Restaurant("KFC", "not good, too", "0988123456", "www.kfcclub.com.tw");
-
+        Restaurant restaurant = new Restaurant("McDonald", "not good", "0977123456", "www.mcdonalds.com.tw", "aaa");
+        Restaurant restaurant2 = new Restaurant("KFC", "not good, too", "0988123456", "www.kfcclub.com.tw", "bbb");
         insert(restaurant);
         insert(restaurant2);
-
     }
 
 }
