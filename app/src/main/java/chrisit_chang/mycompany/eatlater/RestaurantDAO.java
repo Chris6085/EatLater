@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_EATEN_FLAG;
+import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_LATITUDE;
+import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_LONGITUDE;
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_ASSOCIATE_DIARY;
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_IMAGE_FILE;
 import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_TITLE;
@@ -34,6 +36,8 @@ public class RestaurantDAO {
                     COLUMN_TEL + " TEXT, " +
                     COLUMN_NAME_ASSOCIATE_DIARY + " TEXT, " +
                     COLUMN_NAME_IMAGE_FILE + " TEXT, " +
+                    COLUMN_LATITUDE + " REAL, " +
+                    COLUMN_LONGITUDE + " REAL, " +
                     COLUMN_EATEN_FLAG + " INT);";
 
     // 資料庫物件
@@ -62,6 +66,8 @@ public class RestaurantDAO {
         cv.put(COLUMN_TEL, restaurant.getTel());
         cv.put(COLUMN_NAME_ASSOCIATE_DIARY, restaurant.getAssociateDiary());
         cv.put(COLUMN_NAME_IMAGE_FILE, restaurant.getImageName());
+        cv.put(COLUMN_LATITUDE, restaurant.getLatitude());
+        cv.put(COLUMN_LONGITUDE, restaurant.getLongitude());
         cv.put(COLUMN_EATEN_FLAG, restaurant.getEatenFlag());
 
 
@@ -89,6 +95,8 @@ public class RestaurantDAO {
         cv.put(COLUMN_TEL, restaurant.getTel());
         cv.put(COLUMN_NAME_ASSOCIATE_DIARY, restaurant.getAssociateDiary());
         cv.put(COLUMN_NAME_IMAGE_FILE, restaurant.getImageName());
+        cv.put(COLUMN_LATITUDE, restaurant.getLatitude());
+        cv.put(COLUMN_LONGITUDE, restaurant.getLongitude());
         cv.put(COLUMN_EATEN_FLAG, restaurant.getEatenFlag());
 
 
@@ -180,11 +188,9 @@ public class RestaurantDAO {
         result.setTel(cursor.getString(3));
         result.setAssociateDiary(cursor.getString(4));
         result.setImageName(cursor.getString(5));
-        result.setEatenFlag(cursor.getInt(6));
-
-//        Log.d(TAG, "id=" + result.getId());
-//        Log.d(TAG, "notes=" + result.getNotes());
-//        Log.d(TAG, "tel=" + result.getTel());
+        result.setLatitude(cursor.getDouble(6));
+        result.setLongitude(cursor.getDouble(7));
+        result.setEatenFlag(cursor.getInt(8));
 
         // 回傳結果
         return result;
@@ -208,10 +214,14 @@ public class RestaurantDAO {
 
     // 建立範例資料
     public void sample() {
-        Restaurant restaurant = new Restaurant("McDonald", "not good", "0977123456", "www.mcdonalds.com.tw", "aaa", FLAG_NOT_EATEN);
-        Restaurant restaurant2 = new Restaurant("KFC", "not good, too", "0988123456", "www.kfcclub.com.tw", "bbb", FLAG_NOT_EATEN);
-        Restaurant restaurant3 = new Restaurant("Mos", "wow!", "0987654321", "www.mos.com.tw", "ccc", FLAG_EATEN);
-        Restaurant restaurant4 = new Restaurant("BurgerKing", "QQ", "0912345678", "www.burgerking.com.tw", "ddd", FLAG_EATEN);
+        Restaurant restaurant = new Restaurant("McDonald", "not good", "0977123456"
+                , "www.mcdonalds.com.tw", "aaa",25.033408, 121.564099, FLAG_NOT_EATEN);
+        Restaurant restaurant2 = new Restaurant("KFC", "not good, too", "0988123456"
+                , "www.kfcclub.com.tw", "bbb",25.033408, 121.564099, FLAG_NOT_EATEN);
+        Restaurant restaurant3 = new Restaurant("Mos", "wow!", "0987654321"
+                , "www.mos.com.tw", "ccc",25.033408, 121.564099, FLAG_EATEN);
+        Restaurant restaurant4 = new Restaurant("BurgerKing", "QQ", "0912345678"
+                , "www.burgerking.com.tw", "ddd",25.033408, 121.564099, FLAG_EATEN);
         insert(restaurant);
         insert(restaurant2);
         insert(restaurant3);

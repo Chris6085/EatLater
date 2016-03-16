@@ -132,15 +132,11 @@ public class ToEatFragment extends ListFragment {
 
                     //communicate with EatenFragment by MainActivity implemented interface mCallback
                     mCallback.eatenFragmentUpdate();
-
-                    Toast toast = Toast.makeText(getActivity()
-                            , "update is completed", Toast.LENGTH_SHORT);
-                    toast.show();
                 }
                 break;
             default:
                 Toast toast = Toast.makeText(getActivity()
-                        , "something is wrong", Toast.LENGTH_SHORT);
+                        , "requestCode is wrong", Toast.LENGTH_SHORT);
                 toast.show();
         }
     }

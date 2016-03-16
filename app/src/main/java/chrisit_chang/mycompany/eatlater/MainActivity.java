@@ -11,13 +11,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity
@@ -120,10 +118,6 @@ public class MainActivity extends AppCompatActivity
                         eatenFragment.updateListView();
                 }
             }
-        } else {
-            Toast toast = Toast.makeText(this
-                    , "The draft is dropped", Toast.LENGTH_SHORT);
-            toast.show();
         }
         super.onActivityResult(requestCode, resultCode, data);
 

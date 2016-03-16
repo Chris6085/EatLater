@@ -9,6 +9,8 @@ public class Restaurant {
     private String mTel;
     private String mAssociateDiary;
     private String mImageName;
+    private Double mLatitude;
+    private Double mLongitude;
     private int mEatenFlag;
 
     public Restaurant() {
@@ -16,16 +18,21 @@ public class Restaurant {
         mNotes = "";
         mTel = "";
         mAssociateDiary = "";
-        mImageName="";
+        mImageName = "";
+        mLatitude = 0.0;
+        mLongitude = 0.0;
         mEatenFlag = RestaurantDAO.FLAG_NOT_EATEN;
     }
 
-    public Restaurant(String title, String notes, String tel, String associateDiary, String imageName, int eatenFlag) {
+    public Restaurant(String title, String notes, String tel, String associateDiary
+            , String imageName, Double latitude, Double longitude, int eatenFlag) {
         this.mTitle = title;
         this.mNotes = notes;
         this.mTel = tel;
         this.mAssociateDiary = associateDiary;
         this.mImageName = imageName;
+        this.mLatitude = latitude;
+        this.mLongitude = longitude;
         this.mEatenFlag = eatenFlag;
     }
 
@@ -76,4 +83,12 @@ public class Restaurant {
     public int getEatenFlag() { return mEatenFlag; }
 
     public void setEatenFlag(int eatenFlag) { this.mEatenFlag = eatenFlag; }
+
+    public Double getLatitude() { return mLatitude; }
+
+    public void setLatitude(Double latitude) { this.mLatitude = latitude; }
+
+    public Double getLongitude() { return mLongitude; }
+
+    public void setLongitude(Double longitude) { this.mLongitude = longitude; }
 }

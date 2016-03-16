@@ -6,20 +6,25 @@
     <string name="addNotes">Notes</string>
     <string name="addTel">TelNumber</string>
     <string name="addURL">Related site address</string>
-    <string name="OK">Commit</string>
-    <string name="back">Back</string>
+    <string name="OK">COMMIT</string>
+    <string name="back">BACK</string>
 
-    <string name="update">Update</string>
-    <string name="delete">Delete</string>
+    <string name="update">UPDATEe</string>
+    <string name="delete">DELETE</string>
 
     <string name="dialog_message">Are you sure to leave without saving?</string>
     <string name="dialog_title">The title is empty</string>
-    <string name="confirm_btn">Yes</string>
-    <string name="retype_btn">Retype</string>
-    <string name="eaten_btn">Check!</string>
+    <string name="confirm_btn">LEAVE</string>
+    <string name="retype_btn">RETYPE</string>
+    <string name="eaten_btn">CHECK!</string>
 
+    <string name="title_activity_maps">Map</string>
+    <string name="title_update_location">Restaurant location</string>
+    <string name="message_update_location">Update the address with your current location OR Clear the older location?</string>
+    <string name="clear">CLEAR</string>
 
+    <string name="title_current_location">Current location</string>
+    <string name="message_current_location">Want to save it now?</string>
 
-
-
+    <string name="google_play_service_missing">There is no google play service in your device now</string>
 </resources>

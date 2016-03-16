@@ -23,6 +23,7 @@ public class ShowingActivity extends AppCompatActivity {
 
     private static final String TAG = "ShowingActivity";
     public static final int START_CAMERA = 100;
+    public static final int START_LOCATION = 101;
 
     //UI components
     private EditText mEditText;
@@ -124,6 +125,45 @@ public class ShowingActivity extends AppCompatActivity {
 
     public void setInitialButton() {
 
+        //set camera_button
+        ImageButton cameraButton = (ImageButton) findViewById(R.id.camera_button);
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                // 照片檔案名稱
+                File pictureFile = configFileName("P", ".jpg");
+                Uri uri = Uri.fromFile(pictureFile);
+                // 設定檔案名稱
+                intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
+                //make sure at least one app can handle the intent
+                if (intentCamera.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intentCamera, START_CAMERA);
+                }
+            }
+        });
+
+        //set map_button
+        ImageButton mapButton = (ImageButton) findViewById(R.id.map_button);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // 啟動地圖元件用的Intent物件
+                Intent intentMap = new Intent(ShowingActivity.this, MapsActivity.class);
+
+                // 設定儲存的座標
+                intentMap.putExtra("lat", mRestaurant.getLatitude());
+                intentMap.putExtra("lng", mRestaurant.getLongitude());
+
+                if (intentMap.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intentMap, START_LOCATION);
+                }
+            }
+        });
+
         //set update_button
         ImageButton button = (ImageButton) findViewById(R.id.update_button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -132,15 +172,14 @@ public class ShowingActivity extends AppCompatActivity {
                 //deal with Insert and UPDATE options
                 switch (mOption) {
                     case MainActivity.REQUEST_UPDATE:
-
                         //save mRestaurant to DB
                         mRestaurantDAO.update(getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
                         setResult(RESULT_OK);
                         finish();
                         break;
                     case MainActivity.REQUEST_ADD:
+                        //check title is empty or not
                         if (checkTitleIsNotEmpty()) {
-
                             //Column is  not Empty
                             mRestaurantDAO.insert(getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
                             setResult(RESULT_OK);
@@ -169,25 +208,7 @@ public class ShowingActivity extends AppCompatActivity {
             }
         });
 
-        //set camera_button
-        ImageButton cameraButton = (ImageButton) findViewById(R.id.camera_button);
-        cameraButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                // 照片檔案名稱
-                File pictureFile = configFileName("P", ".jpg");
-                Uri uri = Uri.fromFile(pictureFile);
-                // 設定檔案名稱
-                intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-
-                //make sure at least one app can handle the intent
-                if (intentCamera.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intentCamera, START_CAMERA);
-                }
-            }
-        });
 
         //set eaten_button
         Button eatenButton = (Button) findViewById(R.id.eaten_button);
@@ -196,12 +217,13 @@ public class ShowingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //update the column EatenFlag of restaurant to eaten
                 mRestaurantDAO.update(changeToEatRestaurantIntoEaten(mRestaurant));
-
                 setResult(RESULT_OK);
                 finish();
             }
         });
 
+
+        //set eatenButton visible or not
         //只有在toEat Fragment中和action = update時才會出現
         if (mCurrentPage == MainActivity.TO_EAT_FRAGMENT && mOption == MainActivity.REQUEST_UPDATE) {
             eatenButton.setVisibility(View.VISIBLE);
@@ -213,10 +235,16 @@ public class ShowingActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
-                // 照像
                 case START_CAMERA:
-                    // 設定照片檔案名稱
+                    //save them to restaurant
                     mRestaurant.setImageName(mFileName);
+                    break;
+                case START_LOCATION:
+                    //save them to restaurant
+                    double lat = data.getDoubleExtra("lat", 0.0);
+                    double lng = data.getDoubleExtra("lng", 0.0);
+                    mRestaurant.setLatitude(lat);
+                    mRestaurant.setLongitude(lng);
                     break;
             }
         }
