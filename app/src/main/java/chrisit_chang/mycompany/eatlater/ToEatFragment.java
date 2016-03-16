@@ -52,7 +52,6 @@ public class ToEatFragment extends ListFragment {
         }
     }
 
-
     // newInstance constructor for creating fragment with arguments
     public static ToEatFragment newInstance(int page) {
         ToEatFragment toEatFragment = new ToEatFragment();
@@ -84,9 +83,6 @@ public class ToEatFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.toeat_fragment, container, false);
-//        TextView tvLabel = (TextView) view.findViewById(R.id.textView);
-//        tvLabel.setText(page + " -- " + title);
-
     }
 
     @Override

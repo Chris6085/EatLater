@@ -67,6 +67,9 @@ public class ShowingActivity extends AppCompatActivity {
         //設置初始view
         setInitialEditTextAndPicture(mRestaurant);
         setInitialButton();
+
+        //initial the mRestaurant
+        mRestaurant = setInitialBodyOfRestaurant();
     }
 
     @Override
@@ -137,6 +140,7 @@ public class ShowingActivity extends AppCompatActivity {
                         break;
                     case MainActivity.REQUEST_ADD:
                         if (checkTitleIsNotEmpty()) {
+
                             //Column is  not Empty
                             mRestaurantDAO.insert(getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
                             setResult(RESULT_OK);
@@ -211,10 +215,6 @@ public class ShowingActivity extends AppCompatActivity {
             switch (requestCode) {
                 // 照像
                 case START_CAMERA:
-                    //mRestaurant is null now
-                    //set initial body for it
-                    mRestaurant = setInitialBodyOfRestaurant();
-
                     // 設定照片檔案名稱
                     mRestaurant.setImageName(mFileName);
                     break;
@@ -224,7 +224,7 @@ public class ShowingActivity extends AppCompatActivity {
 
     public Restaurant setInitialBodyOfRestaurant() {
         if (mRestaurant == null) {
-            //建立一個空殼
+            //initial a new empty body
             return new Restaurant();
         } else {
             //self assign
@@ -234,16 +234,14 @@ public class ShowingActivity extends AppCompatActivity {
 
     private File configFileName(String prefix, String extension) {
 
-        //TODO fileName problem
-        if (mRestaurant == null) {
+        //first insert or null String
+        if (mRestaurant == null || mRestaurant.getImageName().isEmpty()) {
             // 產生檔案名稱
             mFileName = FileUtil.getUniqueFileName();
-        } else if (mRestaurant.getImageName() != null && mRestaurant.getImageName().length() > 0) {
+        } else if (mRestaurant.getImageName().length() > 0) {
+            //non null
             // 如果記事資料已經有檔案名稱
             mFileName = mRestaurant.getImageName();
-        } else {
-            Log.d(TAG, "configFileName");
-            return null;
         }
 
         return new File(FileUtil.getExternalStorageDir(FileUtil.APP_DIR),
@@ -282,12 +280,6 @@ public class ShowingActivity extends AppCompatActivity {
 
     //從editText中取出text放入mRestaurant
     public Restaurant getRestaurantProbablyWithData(Restaurant restaurant, int page) {
-
-        //if null, it must the insertion process
-        if (restaurant == null) {
-            //establish a new restaurant object
-            restaurant = new Restaurant();
-        }
 
         //save the EatenFlag determined by page
         if (page == MainActivity.TO_EAT_FRAGMENT) {

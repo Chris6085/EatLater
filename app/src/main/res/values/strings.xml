@@ -5,7 +5,7 @@
     <string name="addTitle">Title</string>
     <string name="addNotes">Notes</string>
     <string name="addTel">TelNumber</string>
-    <string name="addURL">Add URL of Blog</string>
+    <string name="addURL">Related site address</string>
     <string name="OK">Commit</string>
     <string name="back">Back</string>
 

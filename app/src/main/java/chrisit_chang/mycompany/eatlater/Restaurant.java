@@ -14,7 +14,10 @@ public class Restaurant {
     public Restaurant() {
         mTitle = "";
         mNotes = "";
-        mEatenFlag = 0;
+        mTel = "";
+        mAssociateDiary = "";
+        mImageName="";
+        mEatenFlag = RestaurantDAO.FLAG_NOT_EATEN;
     }
 
     public Restaurant(String title, String notes, String tel, String associateDiary, String imageName, int eatenFlag) {
