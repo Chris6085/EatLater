@@ -20,7 +20,8 @@ import android.widget.Toast;
 public class EatenFragment extends ListFragment {
 
     //used by the key of bundle for restaurantId
-    public static final String SHOWING_ACTIVITY_RES_ID = "chrisit_chang.myCompany.eatLater.RestaurantId";
+    public static final String SHOWING_ACTIVITY_RES_ID
+            = "chrisit_chang.myCompany.eatLater.RestaurantId";
 
     private static final String TAG = "EatenFragment";
 
@@ -117,19 +118,22 @@ public class EatenFragment extends ListFragment {
 
                     //update view with new data after update
                     this.updateListView();
-                    Toast toast = Toast.makeText(getActivity(), "update is completed", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getActivity()
+                            , "Update is completed", Toast.LENGTH_SHORT);
                     toast.show();
                 }
                 break;
             default:
-                Toast toast = Toast.makeText(getActivity(), "something is wrong", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getActivity()
+                        , "something is wrong", Toast.LENGTH_SHORT);
                 toast.show();
         }
     }
 
     //set ContextMenu
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v
+            , ContextMenu.ContextMenuInfo menuInfo) {
         //設定長按選單的表頭
         menu.setHeaderTitle("Further operations");
         menu.add(UNIQUE_FRAGMENT_GROUP_ID, MENU_BUTTON_1, 0, R.string.delete);
@@ -144,7 +148,8 @@ public class EatenFragment extends ListFragment {
         //判斷被長壓的是哪一個fragment中的ContextMenu產生
         if (item.getGroupId() == UNIQUE_FRAGMENT_GROUP_ID) {
             //取得user選取資訊 (item on long press operation)
-            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+            AdapterView.AdapterContextMenuInfo info =
+                    (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
             switch (item.getItemId()) {
                 //delete option
                 case MENU_BUTTON_1:

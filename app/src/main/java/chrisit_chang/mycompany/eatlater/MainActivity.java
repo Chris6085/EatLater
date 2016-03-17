@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void eatenFragmentUpdate() {
-        EatenFragment eatenFragment = (EatenFragment) MyPagerAdapter.getRegisteredFragment(EATEN_FRAGMENT);
+        EatenFragment eatenFragment = (EatenFragment) MyPagerAdapter
+                .getRegisteredFragment(EATEN_FRAGMENT);
         eatenFragment.updateListView();
     }
 

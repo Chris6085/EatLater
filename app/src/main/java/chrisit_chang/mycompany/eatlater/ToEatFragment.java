@@ -22,7 +22,8 @@ public class ToEatFragment extends ListFragment {
     ListViewUpdateListener mCallback;
 
     //used by the key of bundle for restaurantId
-    public static final String SHOWING_ACTIVITY_RES_ID = "chrisit_chang.myCompany.eatLater.RestaurantId";
+    public static final String SHOWING_ACTIVITY_RES_ID
+            = "chrisit_chang.myCompany.eatLater.RestaurantId";
 
     private static final String TAG = "ToEatFragment";
 
@@ -38,7 +39,7 @@ public class ToEatFragment extends ListFragment {
 
     // Container Activity must implement this interface
     public interface ListViewUpdateListener {
-        public void eatenFragmentUpdate();
+        void eatenFragmentUpdate();
     }
 
     @Override
@@ -125,13 +126,14 @@ public class ToEatFragment extends ListFragment {
             //show and update operation
             case MainActivity.REQUEST_ID_SHOWING_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
-
-                    //TODO update another fragment
                     //update view with new data after update
                     this.updateListView();
 
-                    //communicate with EatenFragment by MainActivity implemented interface mCallback
+                    //communicate with EatenFragment and update it
                     mCallback.eatenFragmentUpdate();
+                    Toast toast = Toast.makeText(getActivity()
+                            , "Update is completed", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
                 break;
             default:
@@ -143,7 +145,8 @@ public class ToEatFragment extends ListFragment {
 
     //set ContextMenu
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v
+            , ContextMenu.ContextMenuInfo menuInfo) {
         //設定長按選單的表頭
         menu.setHeaderTitle("Further operations");
         menu.add(UNIQUE_FRAGMENT_GROUP_ID, MENU_BUTTON_1, 0, R.string.delete);

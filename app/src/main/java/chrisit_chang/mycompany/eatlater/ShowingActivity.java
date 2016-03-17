@@ -10,12 +10,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -107,7 +107,6 @@ public class ShowingActivity extends AppCompatActivity {
 
     //set data of editTexts from the designed restaurant
     public void setInitialEditTextAndPicture(Restaurant restaurant) {
-
         mEditText = (EditText) findViewById(R.id.showingTitle);
         mEditText2 = (EditText) findViewById(R.id.showingNotes);
         mEditText3 = (EditText) findViewById(R.id.showingTel);
@@ -173,7 +172,8 @@ public class ShowingActivity extends AppCompatActivity {
                 switch (mOption) {
                     case MainActivity.REQUEST_UPDATE:
                         //save mRestaurant to DB
-                        mRestaurantDAO.update(getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
+                        mRestaurantDAO.update(
+                                getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
                         setResult(RESULT_OK);
                         finish();
                         break;
@@ -181,7 +181,8 @@ public class ShowingActivity extends AppCompatActivity {
                         //check title is empty or not
                         if (checkTitleIsNotEmpty()) {
                             //Column is  not Empty
-                            mRestaurantDAO.insert(getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
+                            mRestaurantDAO.insert(
+                                    getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
                             setResult(RESULT_OK);
                             finish();
                         } else {
@@ -209,7 +210,6 @@ public class ShowingActivity extends AppCompatActivity {
         });
 
 
-
         //set eaten_button
         Button eatenButton = (Button) findViewById(R.id.eaten_button);
         eatenButton.setOnClickListener(new View.OnClickListener() {
@@ -224,8 +224,9 @@ public class ShowingActivity extends AppCompatActivity {
 
 
         //set eatenButton visible or not
-        //只有在toEat Fragment中和action = update時才會出現
-        if (mCurrentPage == MainActivity.TO_EAT_FRAGMENT && mOption == MainActivity.REQUEST_UPDATE) {
+        //只有在toEat Fragment及action = update時才會出現
+        if (mCurrentPage == MainActivity.TO_EAT_FRAGMENT
+                && mOption == MainActivity.REQUEST_UPDATE) {
             eatenButton.setVisibility(View.VISIBLE);
         }
     }
@@ -261,7 +262,6 @@ public class ShowingActivity extends AppCompatActivity {
     }
 
     private File configFileName(String prefix, String extension) {
-
         //first insert or null String
         if (mRestaurant == null || mRestaurant.getImageName().isEmpty()) {
             // 產生檔案名稱

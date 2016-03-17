@@ -127,11 +127,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         setUpMapIfNeeded();
-        // Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(-34, 151);
-        //setUpMap();
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     // 移動地圖到參數指定的位置
@@ -151,34 +146,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void setUpMap() {
-        // 建立位置的座標物件
-        LatLng place = new LatLng(25.033408, 121.564099);
-        // 移動地圖
-        moveMap(place, MOVE_CAMERA_WITHOUT_ANIMATE);
-
-        // 加入地圖標記
-        addMarker(place, "Hello!", " Google Maps v2!");
-    }
-
     private void setUpMapIfNeeded() {
-
         if (mMap != null) {
             // 移除地圖設定
             //setUpMap();
             processController();
         }
-
-//        if (mMap == null) {
-//            mMap = ((SupportMapFragment) getSupportFragmentManager().
-//                    findFragmentById(R.id.map)).getMap();
-//
-//            if (mMap != null) {
-//                // 移除地圖設定
-//                //setUpMap();
-//                processController();
-//            }
-//        }
     }
 
     private void processController() {
