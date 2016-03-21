@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="?android:attr/selectableItemBackground">
 
     <!-- RestaurantAdapter使用的layout其提供array中每一個object的顯示方式 -->
     <TextView
@@ -10,6 +11,9 @@
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_weight="1"
+        android:layout_margin="@dimen/item_margin"
+        android:background="@color/item_color"
+        android:textSize="16sp"
         android:gravity="center_vertical" />
 
 </LinearLayout>

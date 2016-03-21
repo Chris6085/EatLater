@@ -1,7 +1,11 @@
-package chrisit_chang.mycompany.eatlater;
+package chrisit_chang.mycompany.eatlater.DB;
 
 
-public class Restaurant {
+import java.io.Serializable;
+
+import chrisit_chang.mycompany.eatlater.DB.RestaurantDAO;
+
+public class Restaurant implements Serializable{
 
     private long mId;
     private String mTitle;

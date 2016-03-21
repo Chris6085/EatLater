@@ -1,4 +1,4 @@
-package chrisit_chang.mycompany.eatlater;
+package chrisit_chang.mycompany.eatlater.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,11 +21,7 @@ public class FileUtil {
         String state = Environment.getExternalStorageState();
 
         // 判斷是否可寫入
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     // 外部儲存設備是否可讀取
@@ -34,12 +30,8 @@ public class FileUtil {
         String state = Environment.getExternalStorageState();
 
         // 判斷是否可讀取
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
     // 建立並傳回在公用相簿下參數指定的路徑

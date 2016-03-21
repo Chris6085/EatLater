@@ -15,15 +15,35 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.io.File;
 
+import chrisit_chang.mycompany.eatlater.DB.Restaurant;
+import chrisit_chang.mycompany.eatlater.DB.RestaurantDAO;
+import chrisit_chang.mycompany.eatlater.util.FileUtil;
+
 public class ShowingActivity extends AppCompatActivity {
 
+    //處理MainActivity fab發過來的新增以及list上面點擊之後根據輸入文字更新餐廳資訊
+
     private static final String TAG = "ShowingActivity";
+
     public static final int START_CAMERA = 100;
     public static final int START_LOCATION = 101;
+
+    public static final String OPTION = "update or delete or check";
+    public static final int OPTION_DELETE = 201;
+    public static final int OPTION_UPDATE = 101;
+    public static final int OPTION_CHECK = 301;
+
+    public static final String ITEM_POSITION = "restaurant list position";
+    public static final String PASSING_RESTAURANT = "restaurant";
+
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
+
+    public static final int LEAVE_CHACK = 0;
+    public static final int DELETE_CHECK = 1;
 
     //UI components
     private EditText mEditText;
@@ -37,6 +57,9 @@ public class ShowingActivity extends AppCompatActivity {
 
     //which page start this activity
     private int mCurrentPage;
+
+    //which item is being clicked
+    private int mPosition;
 
     //vars related to restaurant
     private Restaurant mRestaurant = null;
@@ -55,6 +78,7 @@ public class ShowingActivity extends AppCompatActivity {
 
         mOption = bundle.getInt(MainActivity.CHOOSE_ACTIVITY);
         mCurrentPage = bundle.getInt(MainActivity.WHICH_PAGE);
+        mPosition = bundle.getInt(ITEM_POSITION);
 
         //new DAO for future use
         mRestaurantDAO = initialRestaurantDAOInstance(this);
@@ -154,8 +178,8 @@ public class ShowingActivity extends AppCompatActivity {
                 Intent intentMap = new Intent(ShowingActivity.this, MapsActivity.class);
 
                 // 設定儲存的座標
-                intentMap.putExtra("lat", mRestaurant.getLatitude());
-                intentMap.putExtra("lng", mRestaurant.getLongitude());
+                intentMap.putExtra(LATITUDE, mRestaurant.getLatitude());
+                intentMap.putExtra(LONGITUDE, mRestaurant.getLongitude());
 
                 if (intentMap.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intentMap, START_LOCATION);
@@ -163,33 +187,59 @@ public class ShowingActivity extends AppCompatActivity {
             }
         });
 
+        //set delete_button
+        ImageButton deleteButton = (ImageButton) findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog alertDialog = buildAnAlertDialog(DELETE_CHECK);
+                alertDialog.show();
+            }
+        });
+
         //set update_button
-        ImageButton button = (ImageButton) findViewById(R.id.update_button);
-        button.setOnClickListener(new View.OnClickListener() {
+        //處理MainActivity fab發過來的新增以及list上面點擊之後根據輸入文字更新餐廳資訊
+        ImageButton updateButton = (ImageButton) findViewById(R.id.update_button);
+        updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //deal with Insert and UPDATE options
                 switch (mOption) {
                     case MainActivity.REQUEST_UPDATE:
+                        mRestaurant =
+                                updateRestaurantInfo(mRestaurant, mCurrentPage);
+
+                        Intent intentUpdate = new Intent(ShowingActivity.this, MainActivity.class);
+                        intentUpdate.putExtra(ITEM_POSITION, mPosition);
+                        intentUpdate.putExtra(OPTION, OPTION_UPDATE);
+                        intentUpdate.putExtra(PASSING_RESTAURANT, mRestaurant);
+
+                        setResult(RESULT_OK, intentUpdate);
                         //save mRestaurant to DB
-                        mRestaurantDAO.update(
-                                getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
-                        setResult(RESULT_OK);
+                        mRestaurantDAO.update(mRestaurant);
+                        //setResult(RESULT_OK);
                         finish();
                         break;
                     case MainActivity.REQUEST_ADD:
                         //check title is empty or not
                         if (checkTitleIsNotEmpty()) {
+
+                            mRestaurant =
+                                    updateRestaurantInfo(mRestaurant, mCurrentPage);
+
+                            Intent intentAdd = new Intent(ShowingActivity.this, MainActivity.class);
+                            intentAdd.putExtra(PASSING_RESTAURANT, mRestaurant);
+
                             //Column is  not Empty
-                            mRestaurantDAO.insert(
-                                    getRestaurantProbablyWithData(mRestaurant, mCurrentPage));
-                            setResult(RESULT_OK);
+                            mRestaurantDAO.insert(mRestaurant);
+                            setResult(RESULT_OK, intentAdd);
                             finish();
                         } else {
-                            setResult(RESULT_CANCELED);
                             //remind users
-                            AlertDialog alertDialog = buildAnAlertDialog();
+                            AlertDialog alertDialog = buildAnAlertDialog(LEAVE_CHACK);
                             alertDialog.show();
+
+                            setResult(RESULT_CANCELED);
                         }
                         break;
                     default:
@@ -215,13 +265,20 @@ public class ShowingActivity extends AppCompatActivity {
         eatenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                mRestaurant = changeToEatRestaurantIntoEaten(mRestaurant);
+
+                Intent intentCheck = new Intent(ShowingActivity.this, MainActivity.class);
+                intentCheck.putExtra(OPTION, OPTION_CHECK);
+                intentCheck.putExtra(PASSING_RESTAURANT, mRestaurant);
+                intentCheck.putExtra(ITEM_POSITION, mPosition);
+
                 //update the column EatenFlag of restaurant to eaten
-                mRestaurantDAO.update(changeToEatRestaurantIntoEaten(mRestaurant));
-                setResult(RESULT_OK);
+                mRestaurantDAO.update(mRestaurant);
+                setResult(RESULT_OK, intentCheck);
                 finish();
             }
         });
-
 
         //set eatenButton visible or not
         //只有在toEat Fragment及action = update時才會出現
@@ -242,8 +299,8 @@ public class ShowingActivity extends AppCompatActivity {
                     break;
                 case START_LOCATION:
                     //save them to restaurant
-                    double lat = data.getDoubleExtra("lat", 0.0);
-                    double lng = data.getDoubleExtra("lng", 0.0);
+                    double lat = data.getDoubleExtra(LATITUDE, 0.0);
+                    double lng = data.getDoubleExtra(LONGITUDE, 0.0);
                     mRestaurant.setLatitude(lat);
                     mRestaurant.setLongitude(lng);
                     break;
@@ -286,28 +343,55 @@ public class ShowingActivity extends AppCompatActivity {
         return IsNotEmpty;
     }
 
-    public AlertDialog buildAnAlertDialog() {
+    public AlertDialog buildAnAlertDialog(int question) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.dialog_message)
-                .setTitle(R.string.dialog_title);
 
-        builder.setPositiveButton(R.string.confirm_btn, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //back to MainActivity
-                finish();
-            }
-        });
-        builder.setNegativeButton(R.string.retype_btn, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //do nothing
-            }
-        });
+        switch (question) {
+            case LEAVE_CHACK:
+                builder.setMessage(R.string.dialog_message)
+                        .setTitle(R.string.dialog_title);
+
+                builder.setPositiveButton(R.string.confirm_btn, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //back to MainActivity
+                        finish();
+                    }
+                });
+                builder.setNegativeButton(R.string.retype_btn, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //do nothing
+                    }
+                });
+                break;
+            case DELETE_CHECK:
+                builder.setMessage(R.string.delete_dialog_message)
+                        .setTitle(R.string.delete_dialog_title);
+
+                builder.setPositiveButton(R.string.delete_confirm_btn, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        Intent intent = new Intent(ShowingActivity.this, MainActivity.class);
+                        intent.putExtra(ITEM_POSITION, mPosition);
+                        intent.putExtra(OPTION, OPTION_DELETE);
+
+                        mRestaurantDAO.delete(mRestaurant.getId());
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                });
+                builder.setNegativeButton(R.string.delete_cancel_btn, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //do nothing
+                    }
+                });
+                break;
+        }
 
         return builder.create();
     }
 
     //從editText中取出text放入mRestaurant
-    public Restaurant getRestaurantProbablyWithData(Restaurant restaurant, int page) {
+    public Restaurant updateRestaurantInfo(Restaurant restaurant, int page) {
 
         //save the EatenFlag determined by page
         if (page == MainActivity.TO_EAT_FRAGMENT) {

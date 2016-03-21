@@ -1,6 +1,9 @@
 package chrisit_chang.mycompany.eatlater;
 
 import android.app.Activity;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,12 +13,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import chrisit_chang.mycompany.eatlater.DB.Restaurant;
 
 
 public class MainActivity extends AppCompatActivity
@@ -44,10 +50,10 @@ public class MainActivity extends AppCompatActivity
     private ViewPager mVpPager;
 
     @Override
-    public void eatenFragmentUpdate() {
+    public void eatenFragmentUpdate(Restaurant restaurant) {
         EatenFragment eatenFragment = (EatenFragment) MyPagerAdapter
                 .getRegisteredFragment(EATEN_FRAGMENT);
-        eatenFragment.updateListView();
+        eatenFragment.updateAfterCheck(restaurant);
     }
 
     @Override
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity
         MyPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         mVpPager.setAdapter(MyPagerAdapter);
         mVpPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabs));
+        mTabs.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mVpPager));
 
         //set FloatingActionButton
         //goto Adding Activity
@@ -95,39 +102,51 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (resultCode == Activity.RESULT_OK ) {
-            if (requestCode == REQUEST_ID_ADDING_ACTIVITY) {
-                //get PagerAdapter
-                MyPagerAdapter myPagerAdapter = (MyPagerAdapter) mVpPager.getAdapter();
-
-                //get the current item (page)
-                switch (mVpPager.getCurrentItem()) {
-                    case TO_EAT_FRAGMENT:
-                        //get the fragment in current page
-                        ToEatFragment toEatFragment = (ToEatFragment)
-                                myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
-
-                        //update view with new data after insertion
-                        toEatFragment.updateListView();
-                        break;
-                    case EATEN_FRAGMENT:
-                        //get the fragment in current page
-                        EatenFragment eatenFragment = (EatenFragment)
-                                myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
-
-                        //update view with new data after insertion
-                        eatenFragment.updateListView();
-                }
-            }
-        }
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_ID_ADDING_ACTIVITY) {
+
+            Bundle bundle = data.getExtras();
+            Restaurant restaurant = (Restaurant) bundle.getSerializable(ShowingActivity.PASSING_RESTAURANT);
+
+            //get PagerAdapter
+            MyPagerAdapter myPagerAdapter = (MyPagerAdapter) mVpPager.getAdapter();
+
+            //get the current item (page)
+            switch (mVpPager.getCurrentItem()) {
+
+                case TO_EAT_FRAGMENT:
+                    //get the fragment in current page
+                    ToEatFragment toEatFragment = (ToEatFragment)
+                            myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
+                    toEatFragment.mAdapter.insertRestaurant(restaurant);
+
+                    //update view with new data after insertion
+                    //toEatFragment.updateListView();
+                    break;
+                case EATEN_FRAGMENT:
+                    //get the fragment in current page
+                    EatenFragment eatenFragment = (EatenFragment)
+                            myPagerAdapter.getRegisteredFragment(mVpPager.getCurrentItem());
+                    eatenFragment.mAdapter.insertRestaurant(restaurant);
+            }
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        SearchableInfo info =
+                searchManager.getSearchableInfo(getComponentName());
+        searchView.setSearchableInfo(info);
+
         return true;
     }
 
@@ -167,11 +186,9 @@ public class MainActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position) {
                 case 0: // Fragment # 0 - This will show ToEatFragment
-//                    Log.d(TAG, "getItem="+ position);
                     return ToEatFragment.newInstance(0);
 
                 case 1: // Fragment # 1 - This will show EatenFragment
-//                    Log.d(TAG, "getItem="+ position);
                     return EatenFragment.newInstance(1);
                 default:
                     return null;

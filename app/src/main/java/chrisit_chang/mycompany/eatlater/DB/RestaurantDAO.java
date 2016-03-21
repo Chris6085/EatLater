@@ -1,44 +1,35 @@
-package chrisit_chang.mycompany.eatlater;
+package chrisit_chang.mycompany.eatlater.DB;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_EATEN_FLAG;
-import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_LATITUDE;
-import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_LONGITUDE;
-import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_ASSOCIATE_DIARY;
-import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_IMAGE_FILE;
-import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NAME_TITLE;
-import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_NOTE;
-import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.COLUMN_TEL;
-import static chrisit_chang.mycompany.eatlater.ToEatFoodContract.FeedEntry.TABLE_NAME;
+import static android.provider.BaseColumns._ID;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_EATEN_FLAG;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_LATITUDE;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_LONGITUDE;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_NAME_ASSOCIATE_DIARY;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_NAME_IMAGE_FILE;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_NAME_TITLE;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_NOTE;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_TEL;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.TABLE_NAME;
 
 public class RestaurantDAO {
 
     private static final String TAG = "RestaurantDAO";
+    private static Context mContext;
 
     public static final int FLAG_NOT_EATEN = 0;
     public static final int FLAG_EATEN = 1;
 
     // 編號表格欄位名稱，固定不變
-    public static final String KEY_ID = "_id";
-
-    public static final String CREATE_TABLE =
-            "CREATE TABLE " + TABLE_NAME + " (" +
-                    KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    COLUMN_NAME_TITLE + " TEXT, " +
-                    COLUMN_NOTE + " TEXT, " +
-                    COLUMN_TEL + " TEXT, " +
-                    COLUMN_NAME_ASSOCIATE_DIARY + " TEXT, " +
-                    COLUMN_NAME_IMAGE_FILE + " TEXT, " +
-                    COLUMN_LATITUDE + " REAL, " +
-                    COLUMN_LONGITUDE + " REAL, " +
-                    COLUMN_EATEN_FLAG + " INT);";
+    //public static final String KEY_ID = "_id";
 
     // 資料庫物件
     private SQLiteDatabase db;
@@ -47,6 +38,7 @@ public class RestaurantDAO {
     // 建構子，一般的應用都不需要修改
     public RestaurantDAO(Context context) {
         db = DBHelper.getDatabase(context);
+        mContext = context;
     }
 
     // 關閉資料庫，一般的應用都不需要修改
@@ -99,10 +91,9 @@ public class RestaurantDAO {
         cv.put(COLUMN_LONGITUDE, restaurant.getLongitude());
         cv.put(COLUMN_EATEN_FLAG, restaurant.getEatenFlag());
 
-
         // 設定修改資料的條件為編號
         // 格式為「欄位名稱＝資料」
-        String where = KEY_ID + "=" + restaurant.getId();
+        String where = _ID + "=" + restaurant.getId();
 
         // 執行修改資料並回傳修改的資料數量是否成功
         return db.update(TABLE_NAME, cv, where, null) > 0;
@@ -111,7 +102,7 @@ public class RestaurantDAO {
     // 刪除參數指定編號的資料
     public boolean delete(long id) {
         // 設定條件為編號，格式為「欄位名稱=資料」
-        String where = KEY_ID + "=" + id;
+        String where = _ID + "=" + id;
         // 刪除指定編號資料並回傳刪除是否成功
         return db.delete(TABLE_NAME, where, null) > 0;
     }
@@ -120,7 +111,7 @@ public class RestaurantDAO {
     public List<Restaurant> getAllOfRestaurantsWithFlag(int eatenFlag) {
 
         String where;
-        if (eatenFlag == 1) {
+        if (eatenFlag == FLAG_EATEN) {
             where = COLUMN_EATEN_FLAG + "=" + FLAG_EATEN;
         } else {
             where = COLUMN_EATEN_FLAG + "=" + FLAG_NOT_EATEN;
@@ -135,6 +126,27 @@ public class RestaurantDAO {
             while (cursor.moveToNext()) {
                 result.add(getRecord(cursor));
             }
+        }
+        return result;
+    }
+
+    public List<Restaurant> getAllMatchedRestaurant(String query) {
+
+        List<Restaurant> result = new ArrayList<>();
+
+        try (Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
+                + COLUMN_NAME_TITLE + " =? ", new String[]{query})) {
+
+            if (cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+                    result.add(getRecord(cursor));
+                }
+            } else {
+                Toast toast = Toast.makeText(mContext
+                        , "No restaurants founded", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
         }
         return result;
     }
@@ -159,7 +171,7 @@ public class RestaurantDAO {
         // 準備回傳結果用的物件
         Restaurant restaurant = null;
         // 使用編號為查詢條件
-        String where = KEY_ID + "=" + id;
+        String where = _ID + "=" + id;
         // 執行查詢
         try (Cursor result = db.query(TABLE_NAME, null, where, null, null, null, null, null)) {
 

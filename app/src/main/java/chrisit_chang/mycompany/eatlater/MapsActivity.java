@@ -108,8 +108,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // 讀取記事儲存的座標
         Intent intent = getIntent();
-        double lat = intent.getDoubleExtra("lat", 0.0);
-        double lng = intent.getDoubleExtra("lng", 0.0);
+        double lat = intent.getDoubleExtra(ShowingActivity.LATITUDE, 0.0);
+        double lng = intent.getDoubleExtra(ShowingActivity.LONGITUDE, 0.0);
 
         // 如果記事已經儲存座標
         if (lat != 0.0 && lng != 0.0) {
@@ -160,7 +160,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "DialogInterface_onClick");
                         switch (which) {
                             // 更新位置資訊
                             case DialogInterface.BUTTON_POSITIVE:
@@ -172,8 +171,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             // 清除位置資訊
                             case DialogInterface.BUTTON_NEUTRAL:
                                 Intent result = new Intent();
-                                result.putExtra("lat", 0);
-                                result.putExtra("lng", 0);
+                                result.putExtra(ShowingActivity.LATITUDE, 0);
+                                result.putExtra(ShowingActivity.LONGITUDE, 0);
                                 setResult(Activity.RESULT_OK, result);
                                 finish();
                                 break;
@@ -188,7 +187,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Log.d(TAG, "onInfoWindowClick");
                 // 如果是記事儲存的標記
                 if (marker.equals(mRestaurantMarker)) {
                     AlertDialog.Builder ab = new AlertDialog.Builder(MapsActivity.this);
@@ -222,8 +220,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Intent result = new Intent();
-                            result.putExtra("lat", mCurrentLocation.getLatitude());
-                            result.putExtra("lng", mCurrentLocation.getLongitude());
+                            result.putExtra(ShowingActivity.LATITUDE, mCurrentLocation.getLatitude());
+                            result.putExtra(ShowingActivity.LONGITUDE, mCurrentLocation.getLongitude());
                             setResult(Activity.RESULT_OK, result);
                             finish();
                         }

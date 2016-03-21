@@ -4,20 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.util.Log;
-import android.view.ContextMenu;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListView;
-import android.widget.Toast;
+
+import chrisit_chang.mycompany.eatlater.DB.Restaurant;
+import chrisit_chang.mycompany.eatlater.DB.RestaurantDAO;
+import chrisit_chang.mycompany.eatlater.util.ItemClickSupport;
 
 
-public class ToEatFragment extends ListFragment {
+public class ToEatFragment extends Fragment {
 
     ListViewUpdateListener mCallback;
 
@@ -27,9 +26,6 @@ public class ToEatFragment extends ListFragment {
 
     private static final String TAG = "ToEatFragment";
 
-    protected static final int MENU_BUTTON_1 = Menu.FIRST;
-    protected static final int MENU_BUTTON_2 = Menu.FIRST + 1;
-
     // Store instance variables
     private int page;
     private int UNIQUE_FRAGMENT_GROUP_ID;
@@ -37,9 +33,21 @@ public class ToEatFragment extends ListFragment {
     //DAO
     private RestaurantDAO mRestaurantDAO;
 
+    private static final String KEY_LAYOUT_MANAGER = "layoutManager";
+
+    private enum LayoutManagerType {
+        GRID_LAYOUT_MANAGER,
+        LINEAR_LAYOUT_MANAGER
+    }
+
+    protected LayoutManagerType mCurrentLayoutManagerType;
+    protected RecyclerView mRecyclerView;
+    protected RestaurantAdapter mAdapter;
+    protected RecyclerView.LayoutManager mLayoutManager;
+
     // Container Activity must implement this interface
     public interface ListViewUpdateListener {
-        void eatenFragmentUpdate();
+        void eatenFragmentUpdate(Restaurant restaurant);
     }
 
     @Override
@@ -73,119 +81,90 @@ public class ToEatFragment extends ListFragment {
         if (mRestaurantDAO.getCount() == 0) {
             mRestaurantDAO.sample();
         }
-
-        //get toEat Data
-        setListAdapter(new RestaurantAdapter(getActivity(), R.layout.single_restaurant
-                , mRestaurantDAO.getAllOfRestaurantsWithFlag(RestaurantDAO.FLAG_NOT_EATEN)));
     }
 
     // Inflate the view for the fragment based on layout XML
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.toeat_fragment, container, false);
-    }
+        View rootView = inflater.inflate(R.layout.toeat_fragment, container, false);
+        rootView.setTag(TAG);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.to_eat_recycler_view);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setHasFixedSize(true);
+        mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+//        if (savedInstanceState != null) {
+//            // Restore saved layout manager type.
+//            mCurrentLayoutManagerType = (LayoutManagerType) savedInstanceState
+//                    .getSerializable(KEY_LAYOUT_MANAGER);
+//        }
 
-        //final initialization
-        //ContextMenu For Delete operation
-        registerForContextMenu(getListView());
-    }
+        mAdapter = new RestaurantAdapter(getContext(), R.layout.single_restaurant
+                , mRestaurantDAO.getAllOfRestaurantsWithFlag(RestaurantDAO.FLAG_NOT_EATEN));
+        // Set CustomAdapter as the adapter for RecyclerView.
+        mRecyclerView.setAdapter(mAdapter);
 
+        //set onclick function
+        setOnClickFunction();
 
-    //handle the ListItem is being clicked
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        //從選取的id經過adapter取出restaurant物件
-        Restaurant restaurant = (Restaurant) this.getListAdapter().getItem(position);
-        long restaurantId = restaurant.getId();
-
-        //start intent
-        Intent intent = new Intent(getActivity(), ShowingActivity.class);
-        Bundle bundle = new Bundle();
-
-        //update needed vars: action (update), restaurantId and page
-        bundle.putLong(SHOWING_ACTIVITY_RES_ID, restaurantId);
-        bundle.putInt(MainActivity.WHICH_PAGE, page);
-        bundle.putInt(MainActivity.CHOOSE_ACTIVITY, MainActivity.REQUEST_UPDATE);
-
-        intent.putExtras(bundle);
-        startActivityForResult(intent, MainActivity.REQUEST_ID_SHOWING_ACTIVITY);
+        return rootView;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
-            //show and update operation
-            case MainActivity.REQUEST_ID_SHOWING_ACTIVITY:
-                if (resultCode == Activity.RESULT_OK) {
-                    //update view with new data after update
-                    this.updateListView();
+        if (resultCode == Activity.RESULT_OK) {
 
-                    //communicate with EatenFragment and update it
-                    mCallback.eatenFragmentUpdate();
-                    Toast toast = Toast.makeText(getActivity()
-                            , "Update is completed", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-                break;
-            default:
-                Toast toast = Toast.makeText(getActivity()
-                        , "requestCode is wrong", Toast.LENGTH_SHORT);
-                toast.show();
-        }
-    }
+            Bundle bundle = data.getExtras();
+            //get data from intent
+            int position = bundle.getInt(ShowingActivity.ITEM_POSITION);
+            int option = bundle.getInt(ShowingActivity.OPTION);
+            Restaurant restaurant = (Restaurant) bundle.getSerializable(ShowingActivity.PASSING_RESTAURANT);
 
-    //set ContextMenu
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v
-            , ContextMenu.ContextMenuInfo menuInfo) {
-        //設定長按選單的表頭
-        menu.setHeaderTitle("Further operations");
-        menu.add(UNIQUE_FRAGMENT_GROUP_ID, MENU_BUTTON_1, 0, R.string.delete);
-        menu.add(UNIQUE_FRAGMENT_GROUP_ID, MENU_BUTTON_2, 0, R.string.back);
-        super.onCreateContextMenu(menu, v, menuInfo);
-    }
-
-    //長壓提供刪除功能
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-
-        //判斷被長壓的是哪一個fragment中的ContextMenu產生
-        if (item.getGroupId() == UNIQUE_FRAGMENT_GROUP_ID) {
-            //取得user選取資訊 (item on long press operation)
-            AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-            switch (item.getItemId()) {
-                //delete option
-                case MENU_BUTTON_1:
-                    //從選取的id經過adapter取出restaurant物件
-                    Restaurant restaurant = (Restaurant) this.getListAdapter().getItem(info.position);
-                    mRestaurantDAO.delete(restaurant.getId());
-
-                    //update view with new data after delete
-                    this.updateListView();
+            switch (option) {
+                case ShowingActivity.OPTION_DELETE:
+                    mAdapter.removeRestaurant(position);
                     break;
-                //back option
-                case MENU_BUTTON_2:
-                    //just back to MainActivity
+                case ShowingActivity.OPTION_UPDATE:
+                    mAdapter.set(position, restaurant);
                     break;
-                default:
-                    break;
+                case ShowingActivity.OPTION_CHECK:
+                    //after check option, toEatFragment should be remove the designed restaurant
+                    mAdapter.removeRestaurant(position);
+                    mCallback.eatenFragmentUpdate(restaurant);
             }
         }
-        return super.onContextItemSelected(item);
     }
 
-    public void updateListView() {
-        //update
-        setListAdapter(new RestaurantAdapter(getActivity(), R.layout.single_restaurant
-                , mRestaurantDAO.getAllOfRestaurantsWithFlag(RestaurantDAO.FLAG_NOT_EATEN)));
+    public void setOnClickFunction() {
+        ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                //從選取的id經過adapter取出restaurant物件
+                //Restaurant restaurant = (RestaurantAdapter) mRecyclerView.getAdapter().getItem(position);
+
+                Restaurant restaurant = mAdapter.get(position);
+                long restaurantId = restaurant.getId();
+
+                //start intent
+                Intent intent = new Intent(getContext(), ShowingActivity.class);
+                Bundle bundle = new Bundle();
+
+                //update needed vars: action (update), restaurantId and page
+                bundle.putLong(SHOWING_ACTIVITY_RES_ID, restaurantId);
+                bundle.putInt(MainActivity.WHICH_PAGE, page);
+                bundle.putInt(MainActivity.CHOOSE_ACTIVITY, MainActivity.REQUEST_UPDATE);
+
+                //for mAdapter.removeRestaurant(position) use
+                //first send to ShowingActivity and take back in ActivityResult
+                bundle.putInt(ShowingActivity.ITEM_POSITION, position);
+
+                intent.putExtras(bundle);
+                startActivityForResult(intent, MainActivity.REQUEST_ID_SHOWING_ACTIVITY);
+            }
+        });
     }
 }

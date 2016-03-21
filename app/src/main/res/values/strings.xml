@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">EatLater</string>
     <string name="action_settings">Settings</string>
+    <string name="search">Search</string>
 
     <string name="addTitle">Title</string>
     <string name="addNotes">Notes</string>
@@ -16,6 +17,12 @@
     <string name="dialog_title">The title is empty</string>
     <string name="confirm_btn">LEAVE</string>
     <string name="retype_btn">RETYPE</string>
+
+    <string name="delete_dialog_message">Are you sure to delete it?</string>
+    <string name="delete_dialog_title">It will permanently delete your restaurant note</string>
+    <string name="delete_confirm_btn">DELETE</string>
+    <string name="delete_cancel_btn">@android:string/cancel</string>
+
     <string name="eaten_btn">CHECK!</string>
 
     <string name="title_activity_maps">Map</string>
@@ -27,4 +34,7 @@
     <string name="message_current_location">Want to save it now?</string>
 
     <string name="google_play_service_missing">There is no google play service in your device now</string>
+
+    <string name="search_hint">Search Restaurant</string>
+
 </resources>

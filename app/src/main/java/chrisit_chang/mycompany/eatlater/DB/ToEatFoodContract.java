@@ -1,4 +1,4 @@
-package chrisit_chang.mycompany.eatlater;
+package chrisit_chang.mycompany.eatlater.DB;
 
 import android.provider.BaseColumns;
 

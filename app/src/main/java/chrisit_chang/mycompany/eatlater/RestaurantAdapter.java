@@ -1,77 +1,86 @@
 package chrisit_chang.mycompany.eatlater;
 
 import android.content.Context;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
 
+import chrisit_chang.mycompany.eatlater.DB.Restaurant;
 
-public class RestaurantAdapter extends ArrayAdapter<Restaurant> {
+
+public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.ViewHolder> {
     private static final String TAG = "RestaurantAdapter";
     // 畫面資源編號  layout_file
-    private int resource;
+    private int mResource;
+    private final Context mContext;
     // 包裝的記事資料
-    private List<Restaurant> restaurants;
+    private List<Restaurant> mRestaurants;
 
     public RestaurantAdapter(Context context, int resource, List<Restaurant> restaurants) {
-        super(context, resource, restaurants);
-        this.resource = resource;
-        this.restaurants = restaurants;
+        this.mContext = context;
+        this.mResource = resource;
+        this.mRestaurants = restaurants;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public TextView mTextView;
+        public ViewHolder(View itemView){
+            super(itemView);
+
+            mTextView = (TextView) itemView.findViewById(R.id.title_text);
+        }
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        View contactView = LayoutInflater.from(context).inflate(mResource, parent, false);
 
-        LinearLayout restaurantView;
-        // 讀取目前位置的記事物件
-        final Restaurant restaurant = getItem(position);
-
-        if (convertView == null) {
-            // 建立項目畫面元件
-            restaurantView = new LinearLayout(getContext());
-            String inflater = Context.LAYOUT_INFLATER_SERVICE;
-            LayoutInflater li = (LayoutInflater) getContext().getSystemService(inflater);
-            li.inflate(resource, restaurantView, true);
-        }
-        else {
-            restaurantView = (LinearLayout) convertView;
-        }
-
-        // read title
-        TextView titleView = (TextView) restaurantView.findViewById(R.id.title_text);
-
-        // set title
-        titleView.setText(restaurant.getTitle());
-
-        return restaurantView;
+        return new ViewHolder(contactView);
     }
 
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Restaurant restaurant = mRestaurants.get(position);
+        holder.mTextView.setText(restaurant.getTitle());
+    }
+
+    @Override
+    public int getItemCount() {
+        return mRestaurants.size();
+    }
 
     // 設定指定編號的記事資料
     public void set(int index, Restaurant restaurant) {
-        if (index >= 0 && index < restaurants.size()) {
-            restaurants.set(index, restaurant);
+        if (index >= 0 && index < mRestaurants.size()) {
+            mRestaurants.set(index, restaurant);
             notifyDataSetChanged();
         }
     }
 
     // 讀取指定編號的記事資料
     public Restaurant get(int index) {
-        return restaurants.get(index);
+        return mRestaurants.get(index);
     }
 
-    @Override
-    public void notifyDataSetChanged() {
-        Log.d(TAG, "notifyDataSetChanged");
+    public void insertRestaurant(Restaurant restaurant) {
 
-        RestaurantDAO restaurantDAO = new RestaurantDAO(getContext());
-        restaurantDAO.getAll();
-        super.notifyDataSetChanged();
+        //int lastIndex = mRestaurants.size();
+        if (mRestaurants.add(restaurant)) {
+            notifyDataSetChanged();
+
+        }
+    }
+
+
+    public void removeRestaurant(int index) {
+        mRestaurants.remove(index);
+        notifyItemRemoved(index);
+        notifyDataSetChanged();
+
     }
 }
