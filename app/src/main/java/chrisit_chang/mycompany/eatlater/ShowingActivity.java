@@ -42,7 +42,7 @@ public class ShowingActivity extends AppCompatActivity {
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
 
-    public static final int LEAVE_CHACK = 0;
+    public static final int LEAVE_CHECK = 0;
     public static final int DELETE_CHECK = 1;
 
     //UI components
@@ -236,7 +236,7 @@ public class ShowingActivity extends AppCompatActivity {
                             finish();
                         } else {
                             //remind users
-                            AlertDialog alertDialog = buildAnAlertDialog(LEAVE_CHACK);
+                            AlertDialog alertDialog = buildAnAlertDialog(LEAVE_CHECK);
                             alertDialog.show();
 
                             setResult(RESULT_CANCELED);
@@ -347,7 +347,7 @@ public class ShowingActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         switch (question) {
-            case LEAVE_CHACK:
+            case LEAVE_CHECK:
                 builder.setMessage(R.string.dialog_message)
                         .setTitle(R.string.dialog_title);
 

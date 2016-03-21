@@ -25,12 +25,17 @@ import chrisit_chang.mycompany.eatlater.DB.Restaurant;
 
 
 public class MainActivity extends AppCompatActivity
-        implements ToEatFragment.ListViewUpdateListener{
+        implements ToEatFragment.ListViewUpdateListener {
 
+    private static final String TAG = "MainActivity";
 
     //for requestCode of startActivityForResult()
     public static final int REQUEST_ID_SHOWING_ACTIVITY = 0;
     public static final int REQUEST_ID_ADDING_ACTIVITY = 1;
+
+    //tab text
+    public static final String TOEAT_TAB_TEXT = "ToEat";
+    public static final String EATEN_TAB_TEXT = "Eaten";
 
     //for operation of user's choice
     public static final String CHOOSE_ACTIVITY = "chrisit_chang.mycompany.eatlater.choose.option";
@@ -42,13 +47,11 @@ public class MainActivity extends AppCompatActivity
 
     public static final String WHICH_PAGE = "saveThePageBeingPresented";
 
-    private static final String TAG = "MainActivity";
-
     //UI components
-    private TabLayout mTabs;
     private MyPagerAdapter MyPagerAdapter;
     private ViewPager mVpPager;
 
+    //through the MainActivity, ToEatFragment communicates with EatenFragment
     @Override
     public void eatenFragmentUpdate(Restaurant restaurant) {
         EatenFragment eatenFragment = (EatenFragment) MyPagerAdapter
@@ -64,9 +67,9 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         //set TabLayout_Tab
-        mTabs = (android.support.design.widget.TabLayout) findViewById(R.id.tabs);
-        mTabs.addTab(mTabs.newTab().setText("ToEat"));
-        mTabs.addTab(mTabs.newTab().setText("Eaten"));
+        TabLayout mTabs = (android.support.design.widget.TabLayout) findViewById(R.id.tabs);
+        mTabs.addTab(mTabs.newTab().setText(TOEAT_TAB_TEXT));
+        mTabs.addTab(mTabs.newTab().setText(EATEN_TAB_TEXT));
 
         //set TabLayout_ViewPager
         mVpPager = (ViewPager) findViewById(R.id.vpPager);

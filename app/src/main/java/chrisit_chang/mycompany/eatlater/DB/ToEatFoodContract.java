@@ -8,7 +8,7 @@ public final class ToEatFoodContract {
     public ToEatFoodContract() {}
 
     /* Inner class that defines the table contents */
-    public static abstract class FeedEntry implements BaseColumns {
+    public static abstract class RestaurantEntry implements BaseColumns {
         public static final String TABLE_NAME = "ToEatRestaurantRecord";
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NOTE = "note";

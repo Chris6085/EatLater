@@ -3,8 +3,6 @@ package chrisit_chang.mycompany.eatlater.DB;
 
 import java.io.Serializable;
 
-import chrisit_chang.mycompany.eatlater.DB.RestaurantDAO;
-
 public class Restaurant implements Serializable{
 
     private long mId;

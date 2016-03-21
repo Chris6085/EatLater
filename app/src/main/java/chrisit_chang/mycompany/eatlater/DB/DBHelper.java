@@ -7,15 +7,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import static android.provider.BaseColumns._ID;
-import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_EATEN_FLAG;
-import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_LATITUDE;
-import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_LONGITUDE;
-import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_NAME_ASSOCIATE_DIARY;
-import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_NAME_IMAGE_FILE;
-import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_NAME_TITLE;
-import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_NOTE;
-import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.COLUMN_TEL;
-import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.FeedEntry.TABLE_NAME;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.RestaurantEntry.COLUMN_EATEN_FLAG;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.RestaurantEntry.COLUMN_LATITUDE;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.RestaurantEntry.COLUMN_LONGITUDE;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.RestaurantEntry.COLUMN_NAME_ASSOCIATE_DIARY;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.RestaurantEntry.COLUMN_NAME_IMAGE_FILE;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.RestaurantEntry.COLUMN_NAME_TITLE;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.RestaurantEntry.COLUMN_NOTE;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.RestaurantEntry.COLUMN_TEL;
+import static chrisit_chang.mycompany.eatlater.DB.ToEatFoodContract.RestaurantEntry.TABLE_NAME;
 
 public class DBHelper extends SQLiteOpenHelper {
 

@@ -10,10 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
+
+import java.util.List;
 
 import chrisit_chang.mycompany.eatlater.DB.Restaurant;
 import chrisit_chang.mycompany.eatlater.DB.RestaurantDAO;
 import chrisit_chang.mycompany.eatlater.util.ItemClickSupport;
+import chrisit_chang.mycompany.eatlater.util.RecyclerViewEmptySupport;
 
 
 public class ToEatFragment extends Fragment {
@@ -28,7 +32,7 @@ public class ToEatFragment extends Fragment {
 
     // Store instance variables
     private int page;
-    private int UNIQUE_FRAGMENT_GROUP_ID;
+    //private int UNIQUE_FRAGMENT_GROUP_ID;
 
     //DAO
     private RestaurantDAO mRestaurantDAO;
@@ -41,7 +45,8 @@ public class ToEatFragment extends Fragment {
     }
 
     protected LayoutManagerType mCurrentLayoutManagerType;
-    protected RecyclerView mRecyclerView;
+    protected RecyclerViewEmptySupport mRecyclerView;
+    //protected RecyclerView mRecyclerView;
     protected RestaurantAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
 
@@ -74,13 +79,13 @@ public class ToEatFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         page = getArguments().getInt("someInt", 0);
-        UNIQUE_FRAGMENT_GROUP_ID = page;
+        //UNIQUE_FRAGMENT_GROUP_ID = page;
 
         mRestaurantDAO = new RestaurantDAO(getContext());
 
-        if (mRestaurantDAO.getCount() == 0) {
-            mRestaurantDAO.sample();
-        }
+//        if (mRestaurantDAO.getCount() == 0) {
+//            mRestaurantDAO.sample();
+//        }
     }
 
     // Inflate the view for the fragment based on layout XML
@@ -89,11 +94,17 @@ public class ToEatFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.toeat_fragment, container, false);
         rootView.setTag(TAG);
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.to_eat_recycler_view);
+
+        mRecyclerView =
+                (RecyclerViewEmptySupport)rootView.findViewById(R.id.to_eat_recycler_view);
+        //read the data of restaurant from DB
+        List<Restaurant> dataSet =
+                mRestaurantDAO.getAllOfRestaurantsWithFlag(RestaurantDAO.FLAG_NOT_EATEN);
+
         mLayoutManager = new LinearLayoutManager(getActivity());
+        mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
 
 //        if (savedInstanceState != null) {
 //            // Restore saved layout manager type.
@@ -101,10 +112,24 @@ public class ToEatFragment extends Fragment {
 //                    .getSerializable(KEY_LAYOUT_MANAGER);
 //        }
 
-        mAdapter = new RestaurantAdapter(getContext(), R.layout.single_restaurant
-                , mRestaurantDAO.getAllOfRestaurantsWithFlag(RestaurantDAO.FLAG_NOT_EATEN));
         // Set CustomAdapter as the adapter for RecyclerView.
+        mAdapter = new RestaurantAdapter(getContext(), R.layout.single_restaurant, dataSet);
         mRecyclerView.setAdapter(mAdapter);
+
+        //set customized initial view if db saves no data
+        ViewStub emptyView = (ViewStub) rootView.findViewById(R.id.empty_view);
+        //set into mRecyclerView
+        mRecyclerView.setEmptyView(emptyView);
+
+        //set the initial picture to user
+        if (dataSet.isEmpty()) {
+            mRecyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        }
+        else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+        }
 
         //set onclick function
         setOnClickFunction();
@@ -120,8 +145,8 @@ public class ToEatFragment extends Fragment {
 
             Bundle bundle = data.getExtras();
             //get data from intent
-            int position = bundle.getInt(ShowingActivity.ITEM_POSITION);
             int option = bundle.getInt(ShowingActivity.OPTION);
+            int position = bundle.getInt(ShowingActivity.ITEM_POSITION);
             Restaurant restaurant = (Restaurant) bundle.getSerializable(ShowingActivity.PASSING_RESTAURANT);
 
             switch (option) {

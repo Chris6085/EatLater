@@ -16,6 +16,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
     private static final String TAG = "RestaurantAdapter";
     // 畫面資源編號  layout_file
     private int mResource;
+
     private final Context mContext;
     // 包裝的記事資料
     private List<Restaurant> mRestaurants;
@@ -28,7 +29,8 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mTextView;
-        public ViewHolder(View itemView){
+
+        public ViewHolder(View itemView) {
             super(itemView);
 
             mTextView = (TextView) itemView.findViewById(R.id.title_text);
@@ -51,7 +53,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return mRestaurants.size();
+        return mRestaurants == null ? 0 : mRestaurants.size();
     }
 
     // 設定指定編號的記事資料
@@ -72,7 +74,6 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
         //int lastIndex = mRestaurants.size();
         if (mRestaurants.add(restaurant)) {
             notifyDataSetChanged();
-
         }
     }
 
@@ -81,6 +82,5 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
         mRestaurants.remove(index);
         notifyItemRemoved(index);
         notifyDataSetChanged();
-
     }
 }
