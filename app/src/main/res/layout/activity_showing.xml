@@ -28,14 +28,34 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_below="@id/showingNotes"
-        android:hint="@string/addTel"/>
+        android:hint="@string/addTel"
+        android:layout_toStartOf="@+id/dial_button" />
 
     <EditText
         android:id="@+id/showingAssociateDiary"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_below="@id/showingTel"
-        android:hint="@string/addURL"/>
+        android:layout_toStartOf="@+id/browser_button"
+        android:hint="@string/addURL" />
+
+    <ImageButton
+        android:id="@+id/dial_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/OK"
+        android:src="@drawable/ic_local_phone_black_24dp"
+        android:layout_below="@+id/showingNotes"
+        android:layout_toEndOf="@+id/showingAssociateDiary" />
+
+    <ImageButton
+        android:id="@+id/browser_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/OK"
+        android:src="@drawable/ic_open_in_browser_black_24dp"
+        android:layout_below="@+id/showingTel"
+        android:layout_alignParentEnd="true" />
 
     <ImageButton
         android:id="@+id/camera_button"
@@ -43,7 +63,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/OK"
         android:src="@drawable/ic_camera_alt_black_24dp"
-        android:layout_below="@+id/showingAssociateDiary"
+        android:layout_below="@id/showingAssociateDiary"
         android:layout_alignParentStart="true" />
 
     <ImageButton
@@ -52,7 +72,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/OK"
         android:src="@drawable/ic_map_black_24dp"
-        android:layout_below="@+id/showingAssociateDiary"
+        android:layout_below="@id/showingAssociateDiary"
         android:layout_toEndOf="@+id/camera_button" />
 
     <ImageButton
@@ -61,7 +81,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/OK"
         android:src="@drawable/ic_delete_sweep_black_24dp"
-        android:layout_below="@+id/showingAssociateDiary"
+        android:layout_below="@id/showingAssociateDiary"
         android:layout_toStartOf="@+id/update_back_button" />
 
     <ImageButton
@@ -70,7 +90,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/OK"
         android:src="@drawable/ic_undo_black_24dp"
-        android:layout_below="@+id/showingAssociateDiary"
+        android:layout_below="@id/showingAssociateDiary"
         android:layout_toStartOf="@+id/update_button" />
 
     <ImageButton
@@ -79,8 +99,8 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/OK"
         android:src="@drawable/ic_done_black_24dp"
-        android:layout_below="@+id/showingAssociateDiary"
-        android:layout_alignEnd="@+id/picture" />
+        android:layout_above="@+id/picture"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:id="@+id/eaten_button"

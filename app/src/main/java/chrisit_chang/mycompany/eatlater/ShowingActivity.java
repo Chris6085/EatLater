@@ -24,24 +24,28 @@ import chrisit_chang.mycompany.eatlater.util.FileUtil;
 
 public class ShowingActivity extends AppCompatActivity {
 
-    //處理MainActivity fab發過來的新增以及list上面點擊之後根據輸入文字更新餐廳資訊
-
+    //deal with the insertion for FloatingActionButton of MainActivity
+    //or the update of pressed restaurant
+    //besides, provides delete, camera, map browser and call buttons
     private static final String TAG = "ShowingActivity";
 
+    //variables of onActivityResult method for camera and map
     public static final int START_CAMERA = 100;
     public static final int START_LOCATION = 101;
 
-    public static final String OPTION = "update or delete or check";
-    public static final int OPTION_DELETE = 201;
+    //key for check which action executes
+    public static final String KEY_OPTION = "update or delete or check";
     public static final int OPTION_UPDATE = 101;
+    public static final int OPTION_DELETE = 201;
     public static final int OPTION_CHECK = 301;
 
-    public static final String ITEM_POSITION = "restaurant list position";
-    public static final String PASSING_RESTAURANT = "restaurant";
+    //key for the restaurant and map use
 
-    public static final String LATITUDE = "latitude";
-    public static final String LONGITUDE = "longitude";
+    public static final String KEY_PASSING_RESTAURANT = "restaurant";
+    public static final String KEY_LATITUDE = "latitude";
+    public static final String KEY_LONGITUDE = "longitude";
 
+    //alertDialog use
     public static final int LEAVE_CHECK = 0;
     public static final int DELETE_CHECK = 1;
 
@@ -52,10 +56,10 @@ public class ShowingActivity extends AppCompatActivity {
     private EditText mEditText4;
     private ImageView mPicture;
 
-    //watch which activity being used
+    //which intent (update or insert) starts this activity
     private int mOption;
 
-    //which page start this activity
+    //which page starts this activity
     private int mCurrentPage;
 
     //which item is being clicked
@@ -76,16 +80,16 @@ public class ShowingActivity extends AppCompatActivity {
         //get message from intent to retrieve the restaurant of designed id
         final Bundle bundle = this.getIntent().getExtras();
 
-        mOption = bundle.getInt(MainActivity.CHOOSE_ACTIVITY);
-        mCurrentPage = bundle.getInt(MainActivity.WHICH_PAGE);
-        mPosition = bundle.getInt(ITEM_POSITION);
+        mOption = bundle.getInt(MainActivity.KEY_CHOOSE_ACTIVITY);
+        mCurrentPage = bundle.getInt(MainActivity.KEY_WHICH_PAGE);
+        mPosition = bundle.getInt(MainActivity.KEY_ITEM_POSITION);
 
         //new DAO for future use
         mRestaurantDAO = initialRestaurantDAOInstance(this);
 
         //如果是更新的話  要將餐廳資料取出放至mRestaurant上
         if (mOption == MainActivity.REQUEST_UPDATE) {
-            long restaurantId = bundle.getLong(ToEatFragment.SHOWING_ACTIVITY_RES_ID);
+            long restaurantId = bundle.getLong(ToEatFragment.KEY_SHOWING_ACTIVITY_RES_ID);
             mRestaurant = mRestaurantDAO.get(restaurantId);
         }
 
@@ -148,6 +152,35 @@ public class ShowingActivity extends AppCompatActivity {
 
     public void setInitialButton() {
 
+        //set browser_button
+        ImageButton dialButton = (ImageButton) findViewById(R.id.dial_button);
+        dialButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url = mRestaurant.getTel();
+                Intent intentDial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + url.trim()));
+                if (intentDial.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intentDial);
+                }
+
+            }
+        });
+
+        //set browser_button
+        ImageButton browserButton = (ImageButton) findViewById(R.id.browser_button);
+        browserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url = mRestaurant.getAssociateDiary();
+                Intent intentBrowse = new Intent(Intent.ACTION_VIEW);
+                intentBrowse.setData(Uri.parse(url));
+                if (intentBrowse.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intentBrowse);
+                }
+
+            }
+        });
+
         //set camera_button
         ImageButton cameraButton = (ImageButton) findViewById(R.id.camera_button);
         cameraButton.setOnClickListener(new View.OnClickListener() {
@@ -178,8 +211,8 @@ public class ShowingActivity extends AppCompatActivity {
                 Intent intentMap = new Intent(ShowingActivity.this, MapsActivity.class);
 
                 // 設定儲存的座標
-                intentMap.putExtra(LATITUDE, mRestaurant.getLatitude());
-                intentMap.putExtra(LONGITUDE, mRestaurant.getLongitude());
+                intentMap.putExtra(KEY_LATITUDE, mRestaurant.getLatitude());
+                intentMap.putExtra(KEY_LONGITUDE, mRestaurant.getLongitude());
 
                 if (intentMap.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intentMap, START_LOCATION);
@@ -210,9 +243,9 @@ public class ShowingActivity extends AppCompatActivity {
                                 updateRestaurantInfo(mRestaurant, mCurrentPage);
 
                         Intent intentUpdate = new Intent(ShowingActivity.this, MainActivity.class);
-                        intentUpdate.putExtra(ITEM_POSITION, mPosition);
-                        intentUpdate.putExtra(OPTION, OPTION_UPDATE);
-                        intentUpdate.putExtra(PASSING_RESTAURANT, mRestaurant);
+                        intentUpdate.putExtra(MainActivity.KEY_ITEM_POSITION, mPosition);
+                        intentUpdate.putExtra(KEY_OPTION, OPTION_UPDATE);
+                        intentUpdate.putExtra(KEY_PASSING_RESTAURANT, mRestaurant);
 
                         setResult(RESULT_OK, intentUpdate);
                         //save mRestaurant to DB
@@ -228,7 +261,7 @@ public class ShowingActivity extends AppCompatActivity {
                                     updateRestaurantInfo(mRestaurant, mCurrentPage);
 
                             Intent intentAdd = new Intent(ShowingActivity.this, MainActivity.class);
-                            intentAdd.putExtra(PASSING_RESTAURANT, mRestaurant);
+                            intentAdd.putExtra(KEY_PASSING_RESTAURANT, mRestaurant);
 
                             //Column is  not Empty
                             mRestaurantDAO.insert(mRestaurant);
@@ -269,9 +302,9 @@ public class ShowingActivity extends AppCompatActivity {
                 mRestaurant = changeToEatRestaurantIntoEaten(mRestaurant);
 
                 Intent intentCheck = new Intent(ShowingActivity.this, MainActivity.class);
-                intentCheck.putExtra(OPTION, OPTION_CHECK);
-                intentCheck.putExtra(PASSING_RESTAURANT, mRestaurant);
-                intentCheck.putExtra(ITEM_POSITION, mPosition);
+                intentCheck.putExtra(KEY_OPTION, OPTION_CHECK);
+                intentCheck.putExtra(KEY_PASSING_RESTAURANT, mRestaurant);
+                intentCheck.putExtra(MainActivity.KEY_ITEM_POSITION, mPosition);
 
                 //update the column EatenFlag of restaurant to eaten
                 mRestaurantDAO.update(mRestaurant);
@@ -299,8 +332,8 @@ public class ShowingActivity extends AppCompatActivity {
                     break;
                 case START_LOCATION:
                     //save them to restaurant
-                    double lat = data.getDoubleExtra(LATITUDE, 0.0);
-                    double lng = data.getDoubleExtra(LONGITUDE, 0.0);
+                    double lat = data.getDoubleExtra(KEY_LATITUDE, 0.0);
+                    double lng = data.getDoubleExtra(KEY_LONGITUDE, 0.0);
                     mRestaurant.setLatitude(lat);
                     mRestaurant.setLongitude(lng);
                     break;
@@ -371,8 +404,8 @@ public class ShowingActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
 
                         Intent intent = new Intent(ShowingActivity.this, MainActivity.class);
-                        intent.putExtra(ITEM_POSITION, mPosition);
-                        intent.putExtra(OPTION, OPTION_DELETE);
+                        intent.putExtra(MainActivity.KEY_ITEM_POSITION, mPosition);
+                        intent.putExtra(KEY_OPTION, OPTION_DELETE);
 
                         mRestaurantDAO.delete(mRestaurant.getId());
                         setResult(RESULT_OK, intent);

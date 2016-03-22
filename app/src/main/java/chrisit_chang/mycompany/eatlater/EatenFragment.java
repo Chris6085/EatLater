@@ -22,26 +22,19 @@ import chrisit_chang.mycompany.eatlater.util.RecyclerViewEmptySupport;
 
 public class EatenFragment extends Fragment {
 
-    //used by the key of bundle for restaurantId
-    public static final String SHOWING_ACTIVITY_RES_ID
-            = "chrisit_chang.myCompany.eatLater.RestaurantId";
-
     private static final String TAG = "EatenFragment";
 
+    //used by the key of bundle for restaurantId and page
+    public static final String KEY_SHOWING_ACTIVITY_RES_ID
+            = "chrisit_chang.myCompany.eatLater.RestaurantId";
+    public static final String KEY_PAGE = "page someInt";
+
     // Store instance variables
-    private int page;
-    //private int UNIQUE_FRAGMENT_GROUP_ID;
+    private int mPage;
 
     //DAO
     private RestaurantDAO mRestaurantDAO;
 
-    private static final String KEY_LAYOUT_MANAGER = "layoutManager";
-    private enum LayoutManagerType {
-        GRID_LAYOUT_MANAGER,
-        LINEAR_LAYOUT_MANAGER
-    }
-
-    protected LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerViewEmptySupport mRecyclerView;
     protected RestaurantAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
@@ -50,23 +43,16 @@ public class EatenFragment extends Fragment {
     public static EatenFragment newInstance(int page) {
         EatenFragment eatenFragment = new EatenFragment();
         Bundle args = new Bundle();
-        args.putInt("someInt", page);
+        args.putInt(KEY_PAGE, page);
         eatenFragment.setArguments(args);
-
         return eatenFragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = getArguments().getInt("someInt", 0);
-        //UNIQUE_FRAGMENT_GROUP_ID = page;
-
+        mPage = getArguments().getInt(KEY_PAGE, 0);
         mRestaurantDAO = new RestaurantDAO(getContext());
-
-//        if (mRestaurantDAO.getCount() == 0) {
-//            mRestaurantDAO.sample();
-//        }
     }
 
     // Inflate the view for the fragment based on layout XML
@@ -87,15 +73,8 @@ public class EatenFragment extends Fragment {
                 mRestaurantDAO.getAllOfRestaurantsWithFlag(RestaurantDAO.FLAG_EATEN);
 
         mLayoutManager = new LinearLayoutManager(getActivity());
-        mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-
-//        if (savedInstanceState != null) {
-//            // Restore saved layout manager type.
-//            mCurrentLayoutManagerType = (LayoutManagerType) savedInstanceState
-//                    .getSerializable(KEY_LAYOUT_MANAGER);
-//        }
 
         // Set CustomAdapter as the adapter for RecyclerView.
         mAdapter = new RestaurantAdapter(getContext(), R.layout.single_restaurant, dataSet);
@@ -130,9 +109,9 @@ public class EatenFragment extends Fragment {
 
             Bundle bundle = data.getExtras();
             //get position from intent
-            int option = bundle.getInt(ShowingActivity.OPTION);
-            int position = bundle.getInt(ShowingActivity.ITEM_POSITION);
-            Restaurant restaurant = (Restaurant) bundle.getSerializable(ShowingActivity.PASSING_RESTAURANT);
+            int option = bundle.getInt(ShowingActivity.KEY_OPTION);
+            int position = bundle.getInt(MainActivity.KEY_ITEM_POSITION);
+            Restaurant restaurant = (Restaurant) bundle.getSerializable(ShowingActivity.KEY_PASSING_RESTAURANT);
 
             switch (option) {
                 case ShowingActivity.OPTION_DELETE:
@@ -164,13 +143,13 @@ public class EatenFragment extends Fragment {
                 Bundle bundle = new Bundle();
 
                 //update needed vars: action (update), restaurantId and page
-                bundle.putLong(SHOWING_ACTIVITY_RES_ID, restaurantId);
-                bundle.putInt(MainActivity.WHICH_PAGE, page);
-                bundle.putInt(MainActivity.CHOOSE_ACTIVITY, MainActivity.REQUEST_UPDATE);
+                bundle.putLong(KEY_SHOWING_ACTIVITY_RES_ID, restaurantId);
+                bundle.putInt(MainActivity.KEY_WHICH_PAGE, mPage);
+                bundle.putInt(MainActivity.KEY_CHOOSE_ACTIVITY, MainActivity.REQUEST_UPDATE);
 
                 //for mAdapter.removeRestaurant(position) use
                 //first send to ShowingActivity and take back in ActivityResult
-                bundle.putInt(ShowingActivity.ITEM_POSITION, position);
+                bundle.putInt(MainActivity.KEY_ITEM_POSITION, position);
 
                 intent.putExtras(bundle);
                 startActivityForResult(intent, MainActivity.REQUEST_ID_SHOWING_ACTIVITY);

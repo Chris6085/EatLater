@@ -38,14 +38,17 @@ public class MainActivity extends AppCompatActivity
     public static final String EATEN_TAB_TEXT = "Eaten";
 
     //for operation of user's choice
-    public static final String CHOOSE_ACTIVITY = "chrisit_chang.mycompany.eatlater.choose.option";
+    public static final String KEY_CHOOSE_ACTIVITY = "chrisit_chang.mycompany.eatlater.choose.option";
     public static final int REQUEST_ADD = 0;
     public static final int REQUEST_UPDATE = 1;
 
+    //which item position (pressed) and in which page
+    public static final String KEY_WHICH_PAGE = "saveThePageBeingPresented";
+    public static final String KEY_ITEM_POSITION = "restaurant list position";
+
+    //get the current item (page)
     public static final int TO_EAT_FRAGMENT = 0;
     public static final int EATEN_FRAGMENT = 1;
-
-    public static final String WHICH_PAGE = "saveThePageBeingPresented";
 
     //UI components
     private MyPagerAdapter MyPagerAdapter;
@@ -93,8 +96,8 @@ public class MainActivity extends AppCompatActivity
                 Bundle bundle = new Bundle();
 
                 //update needed vars: action (update) and page
-                bundle.putInt(CHOOSE_ACTIVITY, REQUEST_ADD);
-                bundle.putInt(WHICH_PAGE, currentPage);
+                bundle.putInt(KEY_CHOOSE_ACTIVITY, REQUEST_ADD);
+                bundle.putInt(KEY_WHICH_PAGE, currentPage);
 
                 intent.putExtras(bundle);
                 startActivityForResult(intent, REQUEST_ID_ADDING_ACTIVITY);
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_ID_ADDING_ACTIVITY) {
 
             Bundle bundle = data.getExtras();
-            Restaurant restaurant = (Restaurant) bundle.getSerializable(ShowingActivity.PASSING_RESTAURANT);
+            Restaurant restaurant = (Restaurant) bundle.getSerializable(ShowingActivity.KEY_PASSING_RESTAURANT);
 
             //get PagerAdapter
             MyPagerAdapter myPagerAdapter = (MyPagerAdapter) mVpPager.getAdapter();
