@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:textColor="@android:color/holo_green_dark"
     android:background="?android:attr/selectableItemBackground">
 
     <!-- RestaurantAdapter使用的layout其提供array中每一個object的顯示方式 -->

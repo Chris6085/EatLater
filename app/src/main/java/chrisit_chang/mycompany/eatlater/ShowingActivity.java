@@ -1,15 +1,20 @@
 package chrisit_chang.mycompany.eatlater;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,6 +43,8 @@ public class ShowingActivity extends AppCompatActivity {
     public static final int OPTION_UPDATE = 101;
     public static final int OPTION_DELETE = 201;
     public static final int OPTION_CHECK = 301;
+
+    public static final int REQUEST_PERMISSION = 3;
 
     //key for the restaurant and map use
 
@@ -186,17 +193,20 @@ public class ShowingActivity extends AppCompatActivity {
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                // 照片檔案名稱
-                File pictureFile = configFileName("P", ".jpg");
-                Uri uri = Uri.fromFile(pictureFile);
-                // 設定檔案名稱
-                intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                if (ContextCompat.checkSelfPermission(ShowingActivity.this,
+                        Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(ShowingActivity.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
 
-                //make sure at least one app can handle the intent
-                if (intentCamera.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intentCamera, START_CAMERA);
+
+                    ActivityCompat.requestPermissions(ShowingActivity.this,
+                            new String[]{Manifest.permission.CAMERA
+                                    , Manifest.permission.READ_EXTERNAL_STORAGE
+                                    , Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_PERMISSION);
                 }
             }
         });
@@ -449,5 +459,42 @@ public class ShowingActivity extends AppCompatActivity {
         //set EatenFlag of restaurant
         restaurant.setEatenFlag(RestaurantDAO.FLAG_EATEN);
         return restaurant;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    // ç抒瑼獢å蝔
+                    File pictureFile = configFileName("P", ".jpg");
+                    Uri uri = Uri.fromFile(pictureFile);
+                    // 閮剖®瑼獢å蝔
+                    intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
+                    //make sure at least one app can handle the intent
+                    if (intentCamera.resolveActivity(getPackageManager()) != null) {
+                        startActivityForResult(intentCamera, START_CAMERA);
+                    }
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Log.d(TAG, "permission denied");
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }
